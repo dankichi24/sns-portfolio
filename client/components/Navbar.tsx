@@ -4,7 +4,12 @@ const Navbar = () => {
   return (
     <header className="w-full bg-indigo-900 text-white py-4">
       <div className="w-full flex justify-between items-center px-12">
-        <h1 className="text-2xl font-bold">Gaming Device Share</h1>
+        <Link
+          href="/"
+          className="text-2xl font-bold hover:opacity-75 transition-opacity duration-300"
+        >
+          Gaming Device Share
+        </Link>
         <div className="flex space-x-3">
           <Link
             href="/auth/signin"
