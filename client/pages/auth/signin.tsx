@@ -5,9 +5,17 @@ import Link from "next/link";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // ログインの処理（APIへのリクエストなど）
+    console.log("Email:", email, "Password:", password);
   };
 
   return (
@@ -15,12 +23,14 @@ const SignIn = () => {
       <div className="bg-white p-12 md:p-16 rounded shadow-md w-full max-w-2xl">
         <h1 className="text-4xl font-bold text-center mb-8">ログイン</h1>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label className="block text-gray-700 mb-2">メールアドレス</label>
             <input
               type="email"
               placeholder="メールアドレス"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 border rounded"
               required
             />
@@ -31,6 +41,8 @@ const SignIn = () => {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="パスワード"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 border rounded"
               required
             />
@@ -56,7 +68,6 @@ const SignIn = () => {
               パスワードリセット
             </button>
           </Link>
-          {/* 新規登録ボタン */}
           <Link href="/auth/signup">
             <button className="py-2 px-4 font-semibold text-gray-700 rounded hover:bg-gray-200 transition duration-300">
               新規登録はこちら
