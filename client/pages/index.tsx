@@ -1,4 +1,4 @@
-export default function Home() {
+const Home = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       {/* Main content */}
@@ -18,4 +18,6 @@ export default function Home() {
       </main>
     </div>
   );
-}
+};
+
+export default Home;
