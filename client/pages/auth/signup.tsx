@@ -4,6 +4,7 @@ import axios from "axios"; // Axiosの基本インポートのみ
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { useRouter } from "next/router"; // useRouter をインポート
 
 // 型定義
 interface ApiErrorResponse {
@@ -24,6 +25,8 @@ const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const router = useRouter(); // useRouter フックのインスタンスを作成
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -58,6 +61,9 @@ const SignUp = () => {
       console.log("Success response:", response);
       setSuccess(response.data.message);
       setError(null);
+
+      // 成功したらホーム画面にリダイレクト
+      router.push("/home"); // ホーム画面にリダイレクトする
     } catch (err) {
       console.error("Error during API request:", err);
       if (axios.isAxiosError(err) && err.response) {
@@ -83,11 +89,7 @@ const SignUp = () => {
             <input
               type="text"
               value={username}
-              onChange={(e) => {
-                console.log("Event:", e); // イベント情報を表示
-                console.log("Target Value:", e.target.value); // 入力された値を表示
-                setUsername(e.target.value); // 値を更新
-              }}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="ユーザー名"
               className="w-full px-4 py-3 border rounded"
               required
@@ -99,7 +101,7 @@ const SignUp = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)} // 同様に、e.target.value を設定
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="メールアドレス"
               className="w-full px-4 py-3 border rounded"
               required
@@ -111,7 +113,7 @@ const SignUp = () => {
             <input
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)} // 同様に、e.target.value を設定
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="パスワード"
               className="w-full px-4 py-3 border rounded"
               required
@@ -129,7 +131,7 @@ const SignUp = () => {
             <input
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)} // 同様に、e.target.value を設定
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="パスワード確認"
               className="w-full px-4 py-3 border rounded"
               required
