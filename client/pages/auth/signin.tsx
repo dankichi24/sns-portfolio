@@ -12,7 +12,7 @@ interface ApiErrorResponse {
 
 interface ApiSuccessResponse {
   message: string;
-  token: string;
+  token: string; // トークンが返される
 }
 
 const SignIn = () => {
@@ -32,13 +32,20 @@ const SignIn = () => {
 
     try {
       // API にリクエストを送信
-      const response = await apiClient.post<ApiSuccessResponse>("/auth/login", {
-        email,
-        password,
-      });
+      const response = await apiClient.post<ApiSuccessResponse>(
+        "/api/auth/login",
+        {
+          email,
+          password,
+        }
+      );
 
       setSuccess(response.data.message); // 成功メッセージを設定
       setError(null); // エラーメッセージをクリア
+
+      // ログイン成功時にトークンをlocalStorageに保存
+      const token = response.data.token;
+      localStorage.setItem("authToken", token); // トークンを保存
 
       // ログインに成功したらホーム画面にリダイレクト
       router.push("/home");

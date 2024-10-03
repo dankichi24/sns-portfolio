@@ -51,7 +51,7 @@ const SignUp = () => {
 
     try {
       const response = await apiClient.post<ApiSuccessResponse>(
-        "/auth/register",
+        "/api/auth/register",
         {
           username,
           email,

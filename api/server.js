@@ -18,7 +18,17 @@ app.use(
 
 app.use(express.json());
 
+// トップレベルのルートに対応するレスポンスを追加
+app.get("/", (req, res) => {
+  res.send("Welcome to the API");
+});
+
 // 認証ルート
 app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => console.log(`server is running on Port ${PORT}`));
+
+// すべてのルートにマッチしなかった場合の404エラーハンドリング
+app.use((req, res, next) => {
+  res.status(404).json({ error: "ページが見つかりません" });
+});
