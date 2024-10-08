@@ -1,12 +1,18 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import Navbar from "../components/Navbar";
+// _app.tsx
+import { AppProps } from "next/app";
+import { AuthProvider } from "../lib/authContext"; // AuthProvider をインポート
+import "../styles/globals.css"; // グローバルCSSをインポート
+import Navbar from "@/components/Navbar"; // 共通の Navbar コンポーネント
 
-export default function App({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
-      <Navbar /> {/* 全ページ共通のナビゲーションバー */}
-      <Component {...pageProps} /> {/* ページごとのコンテンツ */}
-    </>
+    <AuthProvider>
+      {/* 共通のナビゲーションバー */}
+      <Navbar />
+      {/* 各ページのコンポーネント */}
+      <Component {...pageProps} />
+    </AuthProvider>
   );
 }
+
+export default MyApp;

@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { useAuth } from "../../lib/authContext"; // AuthContext から useAuth をインポート
 
 interface ApiErrorResponse {
   error: string;
@@ -12,7 +13,8 @@ interface ApiErrorResponse {
 
 interface ApiSuccessResponse {
   message: string;
-  token: string; // トークンが返される
+  token: string;
+  user: { name: string; email: string }; // サーバーから返されるユーザー情報
 }
 
 const SignIn = () => {
@@ -21,7 +23,9 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
   const router = useRouter();
+  const { login } = useAuth(); // AuthContext の login 関数を取得
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -30,30 +34,39 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // デフォルトのフォーム送信を防ぐ
 
+    console.log("Submitting form..."); // フォームが送信されたことを確認
+
     try {
       // API にリクエストを送信
+      console.log("Sending API request..."); // APIリクエストの直前にログを追加
+
       const response = await apiClient.post<ApiSuccessResponse>(
         "/api/auth/login",
-        {
-          email,
-          password,
-        }
+        { email, password }
       );
 
-      setSuccess(response.data.message); // 成功メッセージを設定
-      setError(null); // エラーメッセージをクリア
+      console.log("API Response:", response.data); // APIのレスポンス全体を確認
+      // 他のログも含めて、全てのデータが正しいか確認
+      console.log("Token:", response.data.token);
+      console.log("User:", response.data.user);
 
-      // ログイン成功時にトークンをlocalStorageに保存
+      setSuccess(response.data.message);
+      setError(null);
+
       const token = response.data.token;
-      localStorage.setItem("authToken", token); // トークンを保存
+      localStorage.setItem("authToken", token);
 
-      // ログインに成功したらホーム画面にリダイレクト
+      // AuthContext の login 関数に渡すデータをログで確認
+      console.log("User data in login:", response.data.user);
+      login(response.data.user);
+
       router.push("/home");
     } catch (err) {
       console.error("Login error:", err);
       if (axios.isAxiosError(err) && err.response) {
         const apiError = err.response.data as ApiErrorResponse;
-        setError(apiError.error); // サーバーからのエラーメッセージを設定
+        console.log("API error response:", apiError);
+        setError(apiError.error);
       } else {
         setError("ログインに失敗しました。再度お試しください。");
       }

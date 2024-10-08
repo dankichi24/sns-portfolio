@@ -79,8 +79,15 @@ const loginUser = async (req, res) => {
       expiresIn: "1d",
     });
 
-    // トークンを返す
-    return res.json({ token });
+    // トークンとユーザー情報を返す
+    return res.json({
+      message: "ログイン成功",
+      token: token,
+      user: {
+        username: user.username,
+        email: user.email,
+      },
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "サーバーエラーが発生しました" });

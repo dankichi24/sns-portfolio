@@ -1,45 +1,40 @@
-import { createContext, useState, useEffect, ReactNode } from "react";
-import { useRouter } from "next/router";
+// lib/authContext.tsx
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface AuthContextProps {
-  isLoggedIn: boolean;
-  login: () => void;
+interface User {
+  name: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  login: (user: User) => void;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
 
-  // 初回マウント時にローカルストレージから認証状態を取得
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  const login = () => {
-    setIsLoggedIn(true);
+  const login = (userData: User) => {
+    console.log("User data in login:", userData);
+    setUser(userData); // ログイン時にユーザー情報をセット
   };
 
   const logout = () => {
-    localStorage.removeItem("authToken");
-    setIsLoggedIn(false);
-    router.push("/auth/signin"); // ログアウト後にログインページへリダイレクト
+    setUser(null); // ログアウト時にユーザー情報をクリア
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext);
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }

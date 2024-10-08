@@ -1,10 +1,12 @@
+// signup.tsx
 import { useState } from "react";
-import apiClient from "../../lib/apiClient"; // 共通の axios インスタンス
-import axios from "axios"; // Axiosの基本インポートのみ
+import apiClient from "../../lib/apiClient";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { useRouter } from "next/router"; // useRouter をインポート
+import { useRouter } from "next/router";
+import { useAuth } from "../../lib/authContext"; // AuthContextからuseAuthをインポート
 
 // 型定義
 interface ApiErrorResponse {
@@ -26,7 +28,8 @@ const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const router = useRouter(); // useRouter フックのインスタンスを作成
+  const { login } = useAuth(); // useAuth から login 関数を取得
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -38,18 +41,15 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // フォーム送信を防ぐ
-    console.log("Submitting form...");
-    console.log("Username:", username);
-    console.log("Email:", email);
-    console.log("Password:", password);
 
-    // APIリクエストの前にエラーチェック
+    // パスワード確認のチェック
     if (password !== confirmPassword) {
       setError("パスワードが一致しません");
       return;
     }
 
     try {
+      // API にリクエストを送信
       const response = await apiClient.post<ApiSuccessResponse>(
         "/api/auth/register",
         {
@@ -58,20 +58,29 @@ const SignUp = () => {
           password,
         }
       );
-      console.log("Success response:", response);
-      setSuccess(response.data.message);
-      setError(null);
 
-      // 成功したらホーム画面にリダイレクト
-      router.push("/home"); // ホーム画面にリダイレクトする
+      setSuccess(response.data.message); // 成功メッセージを設定
+      setError(null); // エラーメッセージをクリア
+
+      // 登録成功時にトークンをlocalStorageに保存
+      const token = response.data.token;
+      localStorage.setItem("authToken", token); // トークンを保存
+
+      // ログイン情報をAuthContextに保存
+      login({ name: username, email }); // usernameとemailでログイン状態をセット
+
+      // ホーム画面にリダイレクト
+      router.push("/home");
     } catch (err) {
-      console.error("Error during API request:", err);
+      console.error("Registration error:", err);
       if (axios.isAxiosError(err) && err.response) {
         const apiError = err.response.data as ApiErrorResponse;
-        setError(apiError.error);
+        setError(apiError.error); // サーバーからのエラーメッセージを設定
       } else {
         setError("登録に失敗しました。再度お試しください。");
       }
+
+      setSuccess(null);
     }
   };
 
