@@ -1,10 +1,19 @@
-const router = require("express").Router();
-const { registerUser, loginUser } = require("../controllers/authController"); // コントローラをインポート
+const express = require("express");
+const router = express.Router();
+const {
+  registerUser,
+  loginUser,
+  getMe,
+} = require("../controllers/authController");
+const authenticateToken = require("../middleware/authMiddleware");
 
 // 新規ユーザー登録
 router.post("/register", registerUser);
 
-// ログイン
+// ユーザーログイン
 router.post("/login", loginUser);
+
+// 認証されたユーザー情報取得
+router.get("/me", authenticateToken, getMe); // 認証が必要
 
 module.exports = router;

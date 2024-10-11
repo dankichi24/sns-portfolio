@@ -14,7 +14,7 @@ interface ApiErrorResponse {
 interface ApiSuccessResponse {
   message: string;
   token: string;
-  user: { name: string; email: string }; // サーバーから返されるユーザー情報
+  user: { username: string; email: string }; // サーバーから返されるユーザー情報
 }
 
 const SignIn = () => {

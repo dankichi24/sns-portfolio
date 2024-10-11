@@ -1,23 +1,29 @@
-// api/middleware/authMiddleware.js
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET; // 環境変数からJWTのシークレットキーを取得
+const JWT_SECRET = process.env.JWT_SECRET;
 
-// ミドルウェア関数：トークンを検証し、リクエストにユーザー情報を追加する
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // "Bearer <token>" の形式を想定
+  const token = authHeader && authHeader.split(" ")[1];
+
+  // トークンが正しく取得されているか確認
+  console.log("Authorization Header:", authHeader);
 
   if (!token) {
     return res.status(401).json({ error: "トークンが必要です" });
   }
 
+  // JWTトークンの検証前にログ出力
+  console.log("Token being verified:", token);
+
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
+      console.log("Invalid token:", err);
       return res.status(403).json({ error: "トークンが無効です" });
     }
-    req.user = user; // トークンが有効な場合、リクエストにユーザー情報を追加
-    next(); // 次のミドルウェアやルートハンドラーに処理を渡す
+    console.log("Verified User:", user); // ユーザー情報をログで確認
+    req.user = user; // req.user にユーザー情報をセット
+    next();
   });
 };
 

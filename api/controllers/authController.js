@@ -11,7 +11,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
-  // 入力チェック
   if (!username || !email || !password) {
     return res
       .status(400)
@@ -39,7 +38,20 @@ const registerUser = async (req, res) => {
       },
     });
 
-    return res.status(201).json({ user });
+    // JWTトークンを生成
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    // トークンとユーザー情報を返す
+    return res.status(201).json({
+      message: "ユーザー登録成功",
+      token: token, // ← トークンをフロントエンドに返す
+      user: {
+        username: user.username,
+        email: user.email,
+      },
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "サーバーエラーが発生しました" });
@@ -94,7 +106,38 @@ const loginUser = async (req, res) => {
   }
 };
 
+// 認証されたユーザーの情報を取得するコントローラ
+const getMe = async (req, res) => {
+  try {
+    console.log("Authenticated user:", req.user); // ここでユーザーが渡されているか確認
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "ユーザーが見つかりません" });
+    }
+
+    // ユーザー情報を返す
+    return res.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    });
+  } catch (error) {
+    console.error("Error in getMe:", error); // サーバーエラーがあるか確認
+    return res.status(500).json({ error: "サーバーエラーが発生しました" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  getMe, // 追加
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getMe,
 };

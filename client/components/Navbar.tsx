@@ -2,7 +2,13 @@ import Link from "next/link";
 import { useAuth } from "../lib/authContext";
 
 const Navbar = () => {
-  const { user, logout } = useAuth(); // ログイン状態とログアウト関数を取得
+  const { user, logout, isLoading } = useAuth(); // isLoading も追加
+
+  console.log("User in Navbar:", user); // ここでログを確認
+
+  if (isLoading) {
+    return null; // ローディング中は表示しない（必要に応じてスピナーなどに変更可）
+  }
 
   return (
     <header className="w-full bg-indigo-900 text-white py-4">
@@ -16,7 +22,7 @@ const Navbar = () => {
         <div className="flex space-x-3">
           {user ? (
             <>
-              <span>{user.name}</span> {/* ログイン中のユーザー名を表示 */}
+              <span>{user.username}</span> {/* ログイン中のユーザー名を表示 */}
               <button
                 onClick={logout}
                 className="bg-white text-indigo-900 px-4 py-2 rounded font-bold hover:bg-gray-200 transition duration-300"

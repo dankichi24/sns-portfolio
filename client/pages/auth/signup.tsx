@@ -67,7 +67,7 @@ const SignUp = () => {
       localStorage.setItem("authToken", token); // トークンを保存
 
       // ログイン情報をAuthContextに保存
-      login({ name: username, email }); // usernameとemailでログイン状態をセット
+      login({ username: username, email }); // usernameとemailでログイン状態をセット
 
       // ホーム画面にリダイレクト
       router.push("/home");
