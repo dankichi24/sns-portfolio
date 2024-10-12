@@ -14,7 +14,7 @@ const Navbar = () => {
     <header className="w-full bg-indigo-900 text-white py-4">
       <div className="w-full flex justify-between items-center px-12">
         <Link
-          href="/"
+          href={user ? "/home" : "/"} // user が存在する場合 /home に移動、そうでない場合 /
           className="text-2xl font-bold hover:opacity-75 transition-opacity duration-300"
         >
           Gaming Device Share
@@ -22,7 +22,14 @@ const Navbar = () => {
         <div className="flex space-x-3">
           {user ? (
             <>
-              <span>{user.username}</span> {/* ログイン中のユーザー名を表示 */}
+              <span>{user.username}さん</span>{" "}
+              {/* ログイン中のユーザー名を表示 */}
+              <Link
+                href="/mypage"
+                className="bg-white text-indigo-900 px-4 py-2 rounded font-bold hover:bg-gray-200 transition duration-300"
+              >
+                マイページ
+              </Link>
               <button
                 onClick={logout}
                 className="bg-white text-indigo-900 px-4 py-2 rounded font-bold hover:bg-gray-200 transition duration-300"
