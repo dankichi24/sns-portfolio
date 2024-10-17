@@ -2,18 +2,22 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+if (!JWT_SECRET) {
+  throw new Error(
+    "JWT_SECRETが設定されていません。環境変数を確認してください。"
+  );
+}
+
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = authHeader && authHeader.split(" ")[1]; // Bearer トークンの形式を想定
 
-  // トークンが正しく取得されているか確認
   console.log("Authorization Header:", authHeader);
 
   if (!token) {
     return res.status(401).json({ error: "トークンが必要です" });
   }
 
-  // JWTトークンの検証前にログ出力
   console.log("Token being verified:", token);
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
@@ -21,8 +25,9 @@ const authenticateToken = (req, res, next) => {
       console.log("Invalid token:", err);
       return res.status(403).json({ error: "トークンが無効です" });
     }
-    console.log("Verified User:", user); // ユーザー情報をログで確認
-    req.user = user; // req.user にユーザー情報をセット
+    console.log("Verified User:", user); // デバッグ用
+    req.user = user; // ユーザー情報を設定
+    console.log("req.user set:", req.user); // 確認ログ
     next();
   });
 };

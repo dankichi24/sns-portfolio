@@ -1,7 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const path = require("path"); // pathモジュールをインポート
 const authRoutes = require("./routers/auth");
+const postRoutes = require("./routers/posts");
 
 const PORT = 5000;
 
@@ -16,7 +18,7 @@ app.use(
   })
 );
 
-app.use(express.json());
+app.use(express.json()); // JSON形式のリクエストボディを解析
 
 // トップレベルのルートに対応するレスポンスを追加
 app.get("/", (req, res) => {
@@ -25,6 +27,12 @@ app.get("/", (req, res) => {
 
 // 認証ルート
 app.use("/api/auth", authRoutes);
+
+// 投稿ルートを追加
+app.use("/api/posts", postRoutes);
+
+// アップロードされたファイルを静的に提供
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // ここを追加
 
 app.listen(PORT, () => console.log(`server is running on Port ${PORT}`));
 

@@ -9,7 +9,7 @@ const apiClient = axios.create({
 
 // リクエストインターセプターを追加して、毎回トークンをヘッダーに含める
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
