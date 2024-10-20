@@ -11,7 +11,7 @@ const Navbar = () => {
   }
 
   return (
-    <header className="w-full bg-indigo-900 text-white py-4">
+    <header className="w-full bg-indigo-900 text-white py-4 sticky top-0 z-50">
       <div className="w-full flex justify-between items-center px-12">
         <Link
           href={user ? "/home" : "/"} // user が存在する場合 /home に移動、そうでない場合 /
