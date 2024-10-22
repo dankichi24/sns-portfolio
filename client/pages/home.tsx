@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import apiClient from "../lib/apiClient"; // APIクライアントのインポート
+import apiClient from "../lib/apiClient";
 
-// 投稿データの型定義にユーザー名を追加
+// 投稿データの型定義
 interface Post {
   id: number;
   title: string;
@@ -10,8 +10,9 @@ interface Post {
   image?: string;
   user: {
     id: number;
-    username: string; // ユーザー名を表示するために追加
+    username: string; // ユーザー名を表示
   };
+  createdAt: string; // 投稿日時を追加
 }
 
 const Home = () => {
@@ -31,39 +32,62 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="home-page">
-      <h1 className="text-center text-3xl font-bold mb-4">ホーム画面</h1>
-      <div className="flex justify-end mb-4">
-        <Link href="/post/create">
-          <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">
-            Share
-          </button>
-        </Link>
-      </div>
+    <div className="bg-gray-100 min-h-screen">
+      {" "}
+      {/* ページ全体に背景を適用 */}
+      <div className="home-page max-w-4xl mx-auto p-4">
+        <h1 className="text-center text-4xl font-bold mb-6 text-gray-800">
+          <span className="border-b-4 border-blue-500 pb-2">Shere List</span>
+        </h1>
 
-      <div className="post-list">
-        <ul>
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <li key={post.id} className="bg-white p-4 mb-4 rounded shadow-md">
-                <div>
-                  <strong>{post.user.username}</strong> {/* ユーザー名を表示 */}
-                </div>
-                <div>{post.title}</div>
-                <div>{post.content}</div>
-                {post.image && (
-                  <img
-                    src={`http://localhost:5000${post.image}`} // post.imageが /uploads/ を含むように修正
-                    alt={post.title}
-                    className="max-w-full h-auto rounded"
-                  />
-                )}
-              </li>
-            ))
-          ) : (
-            <li>投稿がありません。</li>
-          )}
-        </ul>
+        {/* 投稿ボタン */}
+        <div className="flex justify-end mb-8">
+          <Link href="/post/create">
+            <button className="bg-blue-500 text-white py-3 px-6 rounded hover:bg-blue-600 transition duration-300 shadow-md">
+              Shareする
+            </button>
+          </Link>
+        </div>
+
+        {/* タイムライン風の投稿リスト */}
+        <div className="post-list">
+          <ul className="space-y-6 max-w-4xl mx-auto">
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <li
+                  key={post.id}
+                  className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-sm font-semibold text-blue-500">
+                      {post.user.username}
+                    </span>
+                    {/* 投稿作成日を表示 */}
+                    <span className="text-sm text-gray-400">
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="text-xl font-bold text-gray-800 mb-2">
+                    {post.title}
+                  </div>
+                  <div className="text-gray-700 mb-4 leading-relaxed">
+                    {post.content}
+                  </div>
+                  {post.image && (
+                    <img
+                      src={`http://localhost:5000${post.image}`}
+                      alt={post.title}
+                      className="max-w-full h-auto mx-auto rounded-md shadow-sm"
+                      style={{ maxHeight: "300px", objectFit: "cover" }}
+                    />
+                  )}
+                </li>
+              ))
+            ) : (
+              <li>投稿がありません。</li>
+            )}
+          </ul>
+        </div>
       </div>
     </div>
   );

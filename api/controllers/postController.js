@@ -24,8 +24,9 @@ exports.createPost = async (req, res) => {
       data: {
         title,
         content,
-        image: image ? `/uploads/${image}` : null,
+        image,
         userId: userId,
+        createdAt: new Date(), // 自動で作成される場合は省略可能
       },
     });
     console.log("Post created successfully:", newPost);
@@ -43,9 +44,12 @@ exports.getPosts = async (req, res) => {
       include: {
         user: {
           select: {
-            username: true, // usernameのみを取得
+            username: true, // ユーザー名のみを取得
           },
         },
+      },
+      orderBy: {
+        createdAt: "desc", // 作成日で降順にソート（最新の投稿が上に表示される）
       },
     });
     res.status(200).json(posts);
