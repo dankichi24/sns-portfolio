@@ -16,6 +16,8 @@ interface Post {
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの表示・非表示の状態
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // 選択された画像のURL
 
   const fetchPosts = async () => {
     try {
@@ -30,8 +32,23 @@ const Home = () => {
     fetchPosts();
   }, []);
 
+  // モーダルを開く関数
+  const openModal = (image: string) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+    document.body.style.overflow = "hidden"; // モーダルを開いたら背景のスクロールを無効に
+  };
+
+  // モーダルを閉じる関数
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
+    document.body.style.overflow = "auto"; // モーダルを閉じたら背景のスクロールを有効に
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
+      {" "}
       {/* ページ全体に背景を適用 */}
       <div className="home-page max-w-4xl mx-auto p-4">
         <h1 className="text-center text-4xl font-bold mb-6 text-gray-800">
@@ -65,7 +82,6 @@ const Home = () => {
                       {new Date(post.createdAt).toLocaleString()}
                     </span>
                   </div>
-                  {/* 投稿の内容を表示 */}
                   <div className="text-gray-700 mb-4 leading-relaxed">
                     {post.content}
                   </div>
@@ -73,8 +89,11 @@ const Home = () => {
                     <img
                       src={`http://localhost:5000${post.image}`}
                       alt="Post image"
-                      className="max-w-full h-auto mx-auto rounded-md shadow-sm"
+                      className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer"
                       style={{ maxHeight: "300px", objectFit: "cover" }}
+                      onClick={() =>
+                        openModal(`http://localhost:5000${post.image}`)
+                      } // 画像をクリックしたときにモーダルを開く
                     />
                   )}
                 </li>
@@ -84,6 +103,27 @@ const Home = () => {
             )}
           </ul>
         </div>
+
+        {/* モーダルの実装 */}
+        {isModalOpen && selectedImage && (
+          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-4 rounded shadow-lg max-w-screen-lg max-h-screen overflow-auto">
+              {/* 画像の最大幅と高さを制限 */}
+              <img
+                src={selectedImage}
+                alt="Large view"
+                className="max-w-full max-h-screen mx-auto"
+                style={{ objectFit: "contain" }} // 画像を収めるためのスタイル
+              />
+              <button
+                className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
