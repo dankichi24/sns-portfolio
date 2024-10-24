@@ -5,7 +5,6 @@ import apiClient from "../lib/apiClient";
 // 投稿データの型定義
 interface Post {
   id: number;
-  title: string;
   content: string;
   image?: string;
   user: {
@@ -33,11 +32,10 @@ const Home = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {" "}
       {/* ページ全体に背景を適用 */}
       <div className="home-page max-w-4xl mx-auto p-4">
         <h1 className="text-center text-4xl font-bold mb-6 text-gray-800">
-          <span className="border-b-4 border-blue-500 pb-2">Shere List</span>
+          <span className="border-b-4 border-blue-500 pb-2">Share List</span>
         </h1>
 
         {/* 投稿ボタン */}
@@ -59,24 +57,22 @@ const Home = () => {
                   className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl"
                 >
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-sm font-semibold text-blue-500">
+                    <span className="text-lg font-semibold text-black">
                       {post.user.username}
                     </span>
                     {/* 投稿作成日を表示 */}
                     <span className="text-sm text-gray-400">
-                      {new Date(post.createdAt).toLocaleDateString()}
+                      {new Date(post.createdAt).toLocaleString()}
                     </span>
                   </div>
-                  <div className="text-xl font-bold text-gray-800 mb-2">
-                    {post.title}
-                  </div>
+                  {/* 投稿の内容を表示 */}
                   <div className="text-gray-700 mb-4 leading-relaxed">
                     {post.content}
                   </div>
                   {post.image && (
                     <img
                       src={`http://localhost:5000${post.image}`}
-                      alt={post.title}
+                      alt="Post image"
                       className="max-w-full h-auto mx-auto rounded-md shadow-sm"
                       style={{ maxHeight: "300px", objectFit: "cover" }}
                     />

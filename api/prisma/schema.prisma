@@ -17,7 +17,6 @@ model User {
 
 model Post {
   id        Int      @id @default(autoincrement())
-  title     String
   content   String
   image     String?  // 画像はオプション（nullable）
   userId    Int      // リレーション用のフィールド
