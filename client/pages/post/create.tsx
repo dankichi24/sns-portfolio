@@ -61,53 +61,60 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-lg">
-        <h1 className="text-2xl font-bold mb-6">Create Post</h1>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
+      <div className="bg-white p-12 rounded-xl shadow-xl w-full max-w-lg">
+        <h1 className="text-4xl font-bold text-gray-700 mb-8 text-center">
+          Create Post
+        </h1>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Content</label>
+          <div className="mb-6">
+            <label className="block text-gray-600 font-medium mb-2 text-lg">
+              Content
+            </label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Share your thoughts..."
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Image (optional)</label>
+          <div className="mb-6">
+            <label className="block text-gray-600 font-medium mb-2 text-lg">
+              Image (optional)
+            </label>
             <input
               type="file"
               accept="image/*"
-              onChange={handleImageChange} // イメージが変更されたときの処理
-              className="w-full"
+              onChange={handleImageChange}
+              className="w-full p-2 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {/* プレビュー画像がある場合に表示 */}
           {preview && (
-            <div className="mb-4">
+            <div className="mb-6">
               <img
                 src={preview}
                 alt="Preview"
-                className="w-full h-auto object-contain max-h-64"
+                className="w-full h-auto rounded-lg shadow-md"
+                style={{ maxHeight: "300px", objectFit: "cover" }}
               />
             </div>
           )}
 
-          <div className="flex justify-between">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-            >
-              Share
-            </button>
+          <div className="flex justify-between mt-8">
             <button
               type="button"
               onClick={() => router.push("/home")}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+              className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition shadow-md"
             >
               Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition shadow-md"
+            >
+              Share
             </button>
           </div>
         </form>
