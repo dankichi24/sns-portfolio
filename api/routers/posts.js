@@ -3,6 +3,7 @@ const { createPost, getPosts } = require("../controllers/postController");
 const authenticateToken = require("../middleware/authMiddleware");
 const multer = require("multer");
 const path = require("path");
+const { toggleLike } = require("../controllers/postController");
 
 const router = express.Router();
 
@@ -27,5 +28,8 @@ router.post("/", authenticateToken, upload.single("image"), createPost);
 
 // 投稿一覧取得ルート（GETリクエスト）
 router.get("/", authenticateToken, getPosts); // ここでgetPostsをルートに設定
+
+// いいねのトグルエンドポイント
+router.post("/like", authenticateToken, toggleLike);
 
 module.exports = router;

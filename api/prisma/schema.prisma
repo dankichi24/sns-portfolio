@@ -8,18 +8,31 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  posts     Post[]   // ユーザーは複数の投稿を持つ
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  email    String   @unique
+  password String
+  posts    Post[]
+  likes    Like[]   // UserとLikeのリレーション
 }
 
 model Post {
   id        Int      @id @default(autoincrement())
   content   String
-  image     String?  // 画像はオプション（nullable）
-  userId    Int      // リレーション用のフィールド
-  user      User     @relation(fields: [userId], references: [id]) // `User`とのリレーション
-  createdAt DateTime @default(now())  // 投稿の作成時間をデフォルトで保存
+  image     String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  likes     Like[]   // PostとLikeのリレーション
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId]) // ユーザーが同じ投稿に対して一度だけ「いいね」できるようにする
 }

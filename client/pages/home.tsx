@@ -12,6 +12,8 @@ interface Post {
     username: string; // ユーザー名を表示
   };
   createdAt: string; // 投稿日時を追加
+  liked: boolean; // いいねの状態を追跡
+  likeCount: number; // いいね数を表示
 }
 
 const Home = () => {
@@ -25,6 +27,28 @@ const Home = () => {
       setPosts(response.data);
     } catch (error) {
       console.error("Error fetching posts:", error);
+    }
+  };
+
+  const toggleLike = async (postId: number) => {
+    try {
+      const response = await apiClient.post(`/api/posts/like`, { postId });
+      const updatedPosts = posts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              liked: response.data.liked,
+              likeCount: response.data.liked
+                ? post.likeCount + 1
+                : post.likeCount > 0
+                ? post.likeCount - 1
+                : 0, // likeCountが負の値にならないように
+            }
+          : post
+      );
+      setPosts(updatedPosts);
+    } catch (error) {
+      console.error("Error toggling like:", error);
     }
   };
 
@@ -96,6 +120,21 @@ const Home = () => {
                       } // 画像をクリックしたときにモーダルを開く
                     />
                   )}
+
+                  {/* ここにいいねボタンとカウントを追加 */}
+                  <div className="flex items-center mt-4">
+                    <button
+                      onClick={() => toggleLike(post.id)}
+                      className={`mr-2 ${
+                        post.liked ? "text-red-500" : "text-gray-500"
+                      }`}
+                    >
+                      {post.liked ? "❤️" : "🤍"}
+                    </button>
+                    <span className="text-gray-500">
+                      {post.likeCount} Likes
+                    </span>
+                  </div>
                 </li>
               ))
             ) : (

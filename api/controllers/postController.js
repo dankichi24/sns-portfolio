@@ -59,3 +59,39 @@ exports.getPosts = async (req, res) => {
     res.status(500).json({ error: "投稿の取得に失敗しました。" });
   }
 };
+
+exports.toggleLike = async (req, res) => {
+  const { postId } = req.body;
+  const userId = req.user.userId;
+
+  try {
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_postId: { userId, postId },
+      },
+    });
+
+    if (existingLike) {
+      // 既に「いいね」している場合は削除
+      await prisma.like.delete({
+        where: { id: existingLike.id },
+      });
+      const likeCount = await prisma.like.count({
+        where: { postId },
+      });
+      return res.json({ liked: false, likeCount });
+    } else {
+      // まだ「いいね」していない場合は追加
+      await prisma.like.create({
+        data: { userId, postId },
+      });
+      const likeCount = await prisma.like.count({
+        where: { postId },
+      });
+      return res.json({ liked: true, likeCount });
+    }
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    res.status(500).json({ error: "いいねのトグル中にエラーが発生しました。" });
+  }
+};
