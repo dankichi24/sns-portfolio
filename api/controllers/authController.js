@@ -38,12 +38,10 @@ const registerUser = async (req, res) => {
       },
     });
 
-    // JWTトークン生成時の例
-    const token = jwt.sign(
-      { id: user.id, email: user.email }, // ユーザーIDを含める
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    // JWTトークンを生成 (有効期限は1日)
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "1d",
+    });
 
     // トークンとユーザー情報を返す
     return res.status(201).json({

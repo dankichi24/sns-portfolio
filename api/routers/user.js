@@ -4,6 +4,7 @@ const authenticateToken = require("../middleware/authMiddleware"); // ミドル�
 
 // 保護されたルート：ユーザー情報を取得
 router.get("/profile", authenticateToken, (req, res) => {
+  console.log("req.user in /profile:", req.user); // デバッグ用ログ
   // ミドルウェアを通過した場合、req.user にはトークンからのユーザー情報が含まれる
   res.json({
     message: "認証成功",

@@ -67,7 +67,10 @@ exports.toggleLike = async (req, res) => {
   try {
     const existingLike = await prisma.like.findUnique({
       where: {
-        userId_postId: { userId, postId },
+        userId_postId: {
+          postId: postId,
+          userId: userId,
+        },
       },
     });
 
