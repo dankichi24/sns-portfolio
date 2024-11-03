@@ -24,7 +24,11 @@ const Home = () => {
   const fetchPosts = async () => {
     try {
       const response = await apiClient.get<Post[]>("/api/posts");
-      setPosts(response.data);
+      const postsWithLikes = response.data.map((post) => ({
+        ...post,
+        likeCount: post.likeCount || 0, // likeCountがnullまたはundefinedの場合は0に設定
+      }));
+      setPosts(postsWithLikes);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -39,10 +43,10 @@ const Home = () => {
               ...post,
               liked: response.data.liked,
               likeCount: response.data.liked
-                ? post.likeCount + 1
+                ? (post.likeCount || 0) + 1 // 初回の「いいね」でNaNにならないように0を設定
                 : post.likeCount > 0
                 ? post.likeCount - 1
-                : 0, // likeCountが負の値にならないように
+                : 0, // いいねが0未満にならないように
             }
           : post
       );

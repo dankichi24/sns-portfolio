@@ -67,10 +67,7 @@ exports.toggleLike = async (req, res) => {
   try {
     const existingLike = await prisma.like.findUnique({
       where: {
-        userId_postId: {
-          postId: postId,
-          userId: userId,
-        },
+        userId_postId: { postId, userId },
       },
     });
 
@@ -79,20 +76,15 @@ exports.toggleLike = async (req, res) => {
       await prisma.like.delete({
         where: { id: existingLike.id },
       });
-      const likeCount = await prisma.like.count({
-        where: { postId },
-      });
-      return res.json({ liked: false, likeCount });
     } else {
       // まだ「いいね」していない場合は追加
       await prisma.like.create({
         data: { userId, postId },
       });
-      const likeCount = await prisma.like.count({
-        where: { postId },
-      });
-      return res.json({ liked: true, likeCount });
     }
+
+    const likeCount = (await prisma.like.count({ where: { postId } })) || 0; // NaN防止のため || 0
+    return res.json({ liked: !existingLike, likeCount });
   } catch (error) {
     console.error("Error toggling like:", error);
     res.status(500).json({ error: "いいねのトグル中にエラーが発生しました。" });
