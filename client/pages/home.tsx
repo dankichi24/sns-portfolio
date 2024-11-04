@@ -20,6 +20,7 @@ const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの表示・非表示の状態
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // 選択された画像のURL
+  const [animateLike, setAnimateLike] = useState<number | null>(null); // クリックエフェクト用
 
   const fetchPosts = async () => {
     try {
@@ -43,6 +44,10 @@ const Home = () => {
           : post
       );
       setPosts(updatedPosts);
+
+      // いいねアニメーションをトリガー
+      setAnimateLike(postId);
+      setTimeout(() => setAnimateLike(null), 300); // アニメーション後にリセット
     } catch (error) {
       console.error("Error toggling like:", error);
     }
@@ -118,17 +123,19 @@ const Home = () => {
                   )}
 
                   {/* ここにいいねボタンとカウントを追加 */}
-                  <div className="flex items-center mt-4">
+                  <div className="flex justify-end items-center mt-4">
                     <button
                       onClick={() => toggleLike(post.id)}
-                      className={`mr-2 ${
-                        post.liked ? "text-red-500" : "text-gray-500"
-                      }`}
+                      className={`mr-2 text-xl ${
+                        post.liked ? "text-yellow-500" : "text-gray-500"
+                      } ${animateLike === post.id ? "animate-pop" : ""}`}
                     >
-                      {post.liked ? "❤️" : "🤍"}
+                      {post.liked ? "★" : "☆"} {/* いいねアイコン */}
                     </button>
-                    <span className="text-gray-500">
-                      {post.likeCount} Likes
+                    <span className="text-gray-600 text-lg">
+                      {" "}
+                      {/* カウントの文字サイズを大きく */}
+                      {post.likeCount} nice!
                     </span>
                   </div>
                 </li>

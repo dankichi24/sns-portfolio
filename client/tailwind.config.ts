@@ -12,6 +12,16 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        pop: {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.3)" },
+          "100%": { transform: "scale(1)" },
+        },
+      },
+      animation: {
+        pop: "pop 0.3s ease-in-out",
+      },
     },
   },
   plugins: [],
