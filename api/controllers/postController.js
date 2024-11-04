@@ -39,21 +39,25 @@ exports.createPost = async (req, res) => {
 
 // 投稿の一覧を取得する関数
 exports.getPosts = async (req, res) => {
+  const userId = req.user.userId; // ログイン中のユーザーIDを取得
+
   try {
     const posts = await prisma.post.findMany({
       include: {
-        user: {
-          select: {
-            username: true, // ユーザー名のみを取得
-          },
-        },
+        user: { select: { username: true } },
+        likes: { select: { userId: true } }, // likes テーブルから userId を取得
       },
-      orderBy: {
-        createdAt: "desc", // 作成日で降順にソート（最新の投稿が上に表示される）
-      },
+      orderBy: { createdAt: "desc" },
     });
 
-    res.status(200).json(posts);
+    // ユーザーが「いいね」しているかどうかを追加
+    const postsWithLikeStatus = posts.map((post) => ({
+      ...post,
+      liked: post.likes.some((like) => like.userId === userId),
+      likeCount: post.likes.length,
+    }));
+
+    res.status(200).json(postsWithLikeStatus);
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ error: "投稿の取得に失敗しました。" });
@@ -67,12 +71,15 @@ exports.toggleLike = async (req, res) => {
   try {
     const existingLike = await prisma.like.findUnique({
       where: {
-        userId_postId: { postId, userId },
+        userId_postId: {
+          postId: postId,
+          userId: userId,
+        },
       },
     });
 
     if (existingLike) {
-      // 既に「いいね」している場合は削除
+      // すでに「いいね」している場合は削除
       await prisma.like.delete({
         where: { id: existingLike.id },
       });
@@ -83,8 +90,12 @@ exports.toggleLike = async (req, res) => {
       });
     }
 
-    const likeCount = (await prisma.like.count({ where: { postId } })) || 0; // NaN防止のため || 0
-    return res.json({ liked: !existingLike, likeCount });
+    // 最新のlikeCountを取得
+    const likeCount = await prisma.like.count({
+      where: { postId: postId },
+    });
+
+    res.json({ liked: !existingLike, likeCount }); // 最新のlikeCountを返す
   } catch (error) {
     console.error("Error toggling like:", error);
     res.status(500).json({ error: "いいねのトグル中にエラーが発生しました。" });

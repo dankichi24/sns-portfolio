@@ -23,12 +23,8 @@ const Home = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await apiClient.get<Post[]>("/api/posts");
-      const postsWithLikes = response.data.map((post) => ({
-        ...post,
-        likeCount: post.likeCount || 0, // likeCountがnullまたはundefinedの場合は0に設定
-      }));
-      setPosts(postsWithLikes);
+      const response = await apiClient.get("/api/posts");
+      setPosts(response.data); // サーバーから取得したデータにlikeCountが含まれる
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -36,17 +32,13 @@ const Home = () => {
 
   const toggleLike = async (postId: number) => {
     try {
-      const response = await apiClient.post(`/api/posts/like`, { postId });
+      const response = await apiClient.post("/api/posts/like", { postId });
       const updatedPosts = posts.map((post) =>
         post.id === postId
           ? {
               ...post,
               liked: response.data.liked,
-              likeCount: response.data.liked
-                ? (post.likeCount || 0) + 1 // 初回の「いいね」でNaNにならないように0を設定
-                : post.likeCount > 0
-                ? post.likeCount - 1
-                : 0, // いいねが0未満にならないように
+              likeCount: response.data.likeCount, // サーバーから返された最新のlikeCountを使用
             }
           : post
       );
