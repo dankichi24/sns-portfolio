@@ -129,6 +129,11 @@ const Home = () => {
                       className={`mr-2 text-xl ${
                         post.liked ? "text-yellow-500" : "text-gray-500"
                       } ${animateLike === post.id ? "animate-pop" : ""}`}
+                      style={{
+                        textShadow: post.liked
+                          ? "0px 0px 2px rgba(0, 0, 0, 0.3), 0px 0px 4px rgba(0, 0, 0, 0.3)" // いいね状態のときは枠線が太く見えるように
+                          : "0px 0px 4px rgba(0, 0, 0, 0.3)", // いいねしていないときも少しだけ輪郭を強調
+                      }}
                     >
                       {post.liked ? "★" : "☆"} {/* いいねアイコン */}
                     </button>
