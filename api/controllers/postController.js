@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 // 新規投稿を作成する
-exports.createPost = async (req, res) => {
+const createPost = async (req, res) => {
   console.log("Request user in createPost:", req.user);
   const { content } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null; // 画像がある場合、フルパスを指定
@@ -38,13 +38,13 @@ exports.createPost = async (req, res) => {
 };
 
 // 投稿の一覧を取得する関数
-exports.getPosts = async (req, res) => {
+const getPosts = async (req, res) => {
   const userId = req.user.userId; // ログイン中のユーザーIDを取得
 
   try {
     const posts = await prisma.post.findMany({
       include: {
-        user: { select: { username: true } },
+        user: { select: { id: true, username: true } }, // ユーザーIDとユーザー名を取得
         likes: { select: { userId: true } }, // likes テーブルから userId を取得
       },
       orderBy: { createdAt: "desc" },
@@ -53,6 +53,10 @@ exports.getPosts = async (req, res) => {
     // ユーザーが「いいね」しているかどうかを追加
     const postsWithLikeStatus = posts.map((post) => ({
       ...post,
+      user: {
+        userId: post.user.id, // ユーザーIDを userId としてセット
+        username: post.user.username,
+      },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,
     }));
@@ -64,7 +68,7 @@ exports.getPosts = async (req, res) => {
   }
 };
 
-exports.toggleLike = async (req, res) => {
+const toggleLike = async (req, res) => {
   const { postId } = req.body;
   const userId = req.user.userId;
 
@@ -100,4 +104,85 @@ exports.toggleLike = async (req, res) => {
     console.error("Error toggling like:", error);
     res.status(500).json({ error: "いいねのトグル中にエラーが発生しました。" });
   }
+};
+
+// 投稿を編集する関数
+const editPost = async (req, res) => {
+  console.log("Edit request received for post ID:", req.params.postId); // 追加
+  const { postId } = req.params;
+  const { content } = req.body;
+  const userId = req.user.userId;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: Number(postId) },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: "投稿が見つかりません。" });
+    }
+
+    if (post.userId !== userId) {
+      return res
+        .status(403)
+        .json({ error: "この投稿を編集する権限がありません。" });
+    }
+
+    const updatedPost = await prisma.post.update({
+      where: { id: Number(postId) },
+      data: { content },
+    });
+
+    res
+      .status(200)
+      .json({ message: "投稿が更新されました。", post: updatedPost });
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).json({ error: "投稿の更新中にエラーが発生しました。" });
+  }
+};
+
+// 投稿を削除する関数
+const deletePost = async (req, res) => {
+  const { postId } = req.params;
+  console.log("Received postId for deletion:", postId); // 追加
+  const userId = req.user.userId;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: Number(postId) },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: "投稿が見つかりません。" });
+    }
+
+    if (post.userId !== userId) {
+      return res
+        .status(403)
+        .json({ error: "この投稿を削除する権限がありません。" });
+    }
+
+    await prisma.like.deleteMany({
+      where: { postId: Number(postId) },
+    });
+
+    // 2. 投稿自体を削除
+    await prisma.post.delete({
+      where: { id: Number(postId) },
+    });
+
+    res.status(200).json({ message: "投稿が削除されました。" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).json({ error: "投稿の削除中にエラーが発生しました。" });
+  }
+};
+
+module.exports = {
+  createPost,
+  getPosts,
+  editPost,
+  deletePost,
+  toggleLike,
 };

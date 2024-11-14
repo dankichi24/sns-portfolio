@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import apiClient from "../lib/apiClient";
+import { useAuth } from "../lib/authContext"; // 認証コンテキストをインポート
 
 // 投稿データの型定義
 interface Post {
@@ -8,7 +9,7 @@ interface Post {
   content: string;
   image?: string;
   user: {
-    id: number;
+    userId: number; // userId として定義
     username: string; // ユーザー名を表示
   };
   createdAt: string; // 投稿日時を追加
@@ -17,6 +18,10 @@ interface Post {
 }
 
 const Home = () => {
+  const { user, isLoading } = useAuth();
+  console.log("Current User:", user); // デバッグ用
+  const userId = !isLoading && user ? user.userId : null; // 修正ポイント
+  console.log("Current userId:", userId); // userId の値を表示
   const [posts, setPosts] = useState<Post[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの表示・非表示の状態
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // 選択された画像のURL
@@ -25,7 +30,14 @@ const Home = () => {
   const fetchPosts = async () => {
     try {
       const response = await apiClient.get("/api/posts");
-      setPosts(response.data); // サーバーから取得したデータにlikeCountが含まれる
+      const modifiedData = response.data.map((post: Post) => ({
+        ...post,
+        user: {
+          userId: post.user.userId, // APIの`user.id`を`user.userId`に変換
+          username: post.user.username,
+        },
+      }));
+      setPosts(modifiedData);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -71,6 +83,34 @@ const Home = () => {
     document.body.style.overflow = "auto"; // モーダルを閉じたら背景のスクロールを有効に
   };
 
+  // 編集機能の関数
+  const editPost = async (postId: number, newContent: string) => {
+    try {
+      const response = await apiClient.put(`/api/posts/${postId}`, {
+        content: newContent,
+      });
+      setPosts(
+        posts.map((post) =>
+          post.id === postId
+            ? { ...post, content: response.data.post.content }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Error editing post:", error);
+    }
+  };
+
+  // 削除機能の関数
+  const deletePost = async (postId: number) => {
+    try {
+      await apiClient.delete(`/api/posts/${postId}`);
+      setPosts(posts.filter((post) => post.id !== postId));
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       {" "}
@@ -93,58 +133,86 @@ const Home = () => {
         <div className="post-list">
           <ul className="space-y-6 max-w-4xl mx-auto">
             {posts.length > 0 ? (
-              posts.map((post) => (
-                <li
-                  key={post.id}
-                  className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl"
-                >
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-lg font-semibold text-black">
-                      {post.user.username}
-                    </span>
-                    {/* 投稿作成日を表示 */}
-                    <span className="text-sm text-gray-400">
-                      {new Date(post.createdAt).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="text-gray-700 mb-4 leading-relaxed">
-                    {post.content}
-                  </div>
-                  {post.image && (
-                    <img
-                      src={`http://localhost:5000${post.image}`}
-                      alt="Post image"
-                      className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer"
-                      style={{ maxHeight: "300px", objectFit: "cover" }}
-                      onClick={() =>
-                        openModal(`http://localhost:5000${post.image}`)
-                      } // 画像をクリックしたときにモーダルを開く
-                    />
-                  )}
+              posts.map((post) => {
+                // ログを追加して確認する
+                console.log("Current userId:", userId);
+                console.log("Post userId:", post.user.userId);
 
-                  {/* ここにいいねボタンとカウントを追加 */}
-                  <div className="flex justify-end items-center mt-4">
-                    <button
-                      onClick={() => toggleLike(post.id)}
-                      className={`mr-2 text-xl ${
-                        post.liked ? "text-yellow-500" : "text-gray-500"
-                      } ${animateLike === post.id ? "animate-pop" : ""}`}
-                      style={{
-                        textShadow: post.liked
-                          ? "0px 0px 2px rgba(0, 0, 0, 0.3), 0px 0px 4px rgba(0, 0, 0, 0.3)" // いいね状態のときは枠線が太く見えるように
-                          : "0px 0px 4px rgba(0, 0, 0, 0.3)", // いいねしていないときも少しだけ輪郭を強調
-                      }}
-                    >
-                      {post.liked ? "★" : "☆"} {/* いいねアイコン */}
-                    </button>
-                    <span className="text-gray-600 text-lg">
-                      {" "}
-                      {/* カウントの文字サイズを大きく */}
-                      {post.likeCount} nice!
-                    </span>
-                  </div>
-                </li>
-              ))
+                return (
+                  <li
+                    key={post.id}
+                    className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl"
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-lg font-semibold text-black">
+                        {post.user.username}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        {new Date(post.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="text-gray-700 mb-4 leading-relaxed">
+                      {post.content}
+                    </div>
+                    {post.image && (
+                      <img
+                        src={`http://localhost:5000${post.image}`}
+                        alt="Post image"
+                        className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer"
+                        style={{ maxHeight: "300px", objectFit: "cover" }}
+                        onClick={() =>
+                          openModal(`http://localhost:5000${post.image}`)
+                        }
+                      />
+                    )}
+
+                    {/* いいねボタンとカウント */}
+                    <div className="flex justify-end items-center mt-4">
+                      <button
+                        onClick={() => toggleLike(post.id)}
+                        className={`mr-2 text-xl ${
+                          post.liked ? "text-yellow-500" : "text-gray-500"
+                        } ${animateLike === post.id ? "animate-pop" : ""}`}
+                        style={{
+                          textShadow: post.liked
+                            ? "0px 0px 2px rgba(0, 0, 0, 0.3), 0px 0px 4px rgba(0, 0, 0, 0.3)"
+                            : "0px 0px 4px rgba(0, 0, 0, 0.3)",
+                        }}
+                      >
+                        {post.liked ? "★" : "☆"}
+                      </button>
+                      <span className="text-gray-600 text-lg">
+                        {post.likeCount} nice!
+                      </span>
+                    </div>
+
+                    {post.user.userId === userId && (
+                      <div className="flex justify-end space-x-2 mt-2">
+                        <button
+                          onClick={() => {
+                            const newContent = prompt(
+                              "新しい内容を入力してください",
+                              post.content
+                            );
+                            if (newContent) {
+                              editPost(post.id, newContent);
+                            }
+                          }}
+                          className="text-blue-500 hover:underline"
+                        >
+                          編集
+                        </button>
+                        <button
+                          onClick={() => deletePost(post.id)}
+                          className="text-red-500 hover:underline"
+                        >
+                          削除
+                        </button>
+                      </div>
+                    )}
+                  </li>
+                );
+              })
             ) : (
               <li>投稿がありません。</li>
             )}

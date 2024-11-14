@@ -109,7 +109,7 @@ const loginUser = async (req, res) => {
 // 認証されたユーザーの情報を取得するコントローラ
 const getMe = async (req, res) => {
   try {
-    console.log("Authenticated user:", req.user); // ここでユーザーが渡されているか確認
+    console.log("Authenticated user:", req.user); // デバッグ用ログ
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
     });
@@ -120,7 +120,7 @@ const getMe = async (req, res) => {
 
     // ユーザー情報を返す
     return res.json({
-      id: user.id,
+      userId: user.id, // userIdとして返す
       username: user.username,
       email: user.email,
     });
@@ -128,12 +128,6 @@ const getMe = async (req, res) => {
     console.error("Error in getMe:", error); // サーバーエラーがあるか確認
     return res.status(500).json({ error: "サーバーエラーが発生しました" });
   }
-};
-
-module.exports = {
-  registerUser,
-  loginUser,
-  getMe, // 追加
 };
 
 module.exports = {
