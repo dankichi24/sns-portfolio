@@ -48,6 +48,7 @@ const registerUser = async (req, res) => {
       message: "ユーザー登録成功",
       token: token, // ← トークンをフロントエンドに返す
       user: {
+        userId: user.id,
         username: user.username,
         email: user.email,
       },
@@ -96,6 +97,7 @@ const loginUser = async (req, res) => {
       message: "ログイン成功",
       token: token,
       user: {
+        userId: user.id,
         username: user.username,
         email: user.email,
       },
