@@ -14,9 +14,12 @@ interface ApiErrorResponse {
 interface ApiSuccessResponse {
   message: string;
   token: string;
-  user: { username: string; email: string }; // サーバーから返されるユーザー情報
+  user: {
+    userId: number;
+    username: string;
+    email: string;
+  };
 }
-
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");

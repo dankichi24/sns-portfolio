@@ -46,9 +46,9 @@ const registerUser = async (req, res) => {
     // トークンとユーザー情報を返す
     return res.status(201).json({
       message: "ユーザー登録成功",
-      token: token, // ← トークンをフロントエンドに返す
+      token: token, // トークンをフロントエンドに返す
       user: {
-        userId: user.id,
+        userId: user.id, // userId を返す
         username: user.username,
         email: user.email,
       },
