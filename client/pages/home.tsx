@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { FiEdit } from "react-icons/fi"; // アイコンをインポート
+import { FaTrashAlt } from "react-icons/fa"; // 削除アイコンもインポート
 import apiClient from "../lib/apiClient";
 import { useAuth } from "../lib/authContext"; // 認証コンテキストをインポート
 
@@ -19,9 +21,7 @@ interface Post {
 
 const Home = () => {
   const { user, isLoading } = useAuth();
-  console.log("Current User:", user); // デバッグ用
   const userId = !isLoading && user ? user.userId : null; // 修正ポイント
-  console.log("Current userId:", userId); // userId の値を表示
   const [posts, setPosts] = useState<Post[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの表示・非表示の状態
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // 選択された画像のURL
@@ -113,7 +113,6 @@ const Home = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {" "}
       {/* ページ全体に背景を適用 */}
       <div className="home-page max-w-4xl mx-auto p-4">
         <h1 className="text-center text-4xl font-bold mb-6 text-gray-800">
@@ -144,12 +143,38 @@ const Home = () => {
                     className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl"
                   >
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-lg font-semibold text-black">
+                      <span className="text-lg font-semibold text-blue-600">
                         {post.user.username}
                       </span>
-                      <span className="text-sm text-gray-400">
-                        {new Date(post.createdAt).toLocaleString()}
-                      </span>
+                      <div className="flex items-center">
+                        {post.user.userId === userId && (
+                          <>
+                            <button
+                              onClick={() => {
+                                const newContent = prompt(
+                                  "新しい内容を入力してください",
+                                  post.content
+                                );
+                                if (newContent) {
+                                  editPost(post.id, newContent);
+                                }
+                              }}
+                              className="flex items-center text-sm text-blue-500 hover:text-blue-700 mr-4 focus:outline-none"
+                            >
+                              <FiEdit className="mr-1" size={17} />
+                            </button>
+                            <button
+                              onClick={() => deletePost(post.id)}
+                              className="flex items-center text-sm text-red-500 hover:text-red-700 mr-4 focus:outline-none"
+                            >
+                              <FaTrashAlt className="mr-1" size={17} />
+                            </button>
+                          </>
+                        )}
+                        <span className="text-sm text-gray-500">
+                          {new Date(post.createdAt).toLocaleString()}
+                        </span>
+                      </div>
                     </div>
                     <div className="text-gray-700 mb-4 leading-relaxed">
                       {post.content}
@@ -185,31 +210,6 @@ const Home = () => {
                         {post.likeCount} nice!
                       </span>
                     </div>
-
-                    {post.user.userId === userId && (
-                      <div className="flex justify-end space-x-2 mt-2">
-                        <button
-                          onClick={() => {
-                            const newContent = prompt(
-                              "新しい内容を入力してください",
-                              post.content
-                            );
-                            if (newContent) {
-                              editPost(post.id, newContent);
-                            }
-                          }}
-                          className="text-blue-500 hover:underline"
-                        >
-                          編集
-                        </button>
-                        <button
-                          onClick={() => deletePost(post.id)}
-                          className="text-red-500 hover:underline"
-                        >
-                          削除
-                        </button>
-                      </div>
-                    )}
                   </li>
                 );
               })
