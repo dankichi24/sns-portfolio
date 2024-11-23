@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiEdit } from "react-icons/fi"; // アイコンをインポート
 import { FaTrashAlt } from "react-icons/fa"; // 削除アイコンもインポート
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import apiClient from "../lib/apiClient";
 import { useAuth } from "../lib/authContext"; // 認証コンテキストをインポート
+
+// SweetAlert2をReactと統合
+const MySwal = withReactContent(Swal);
 
 // 投稿データの型定義
 interface Post {
@@ -101,6 +106,25 @@ const Home = () => {
     }
   };
 
+  // 削除機能の関数（SweetAlert2を使用）
+  const confirmDeletePost = (postId: number) => {
+    MySwal.fire({
+      title: "削除してもよろしいですか？",
+      text: "この操作は元に戻せません。",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "削除",
+      cancelButtonText: "キャンセル",
+      reverseButtons: true, // ボタンの順序を逆にする
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deletePost(postId);
+      }
+    });
+  };
+
   // 削除機能の関数
   const deletePost = async (postId: number) => {
     try {
@@ -159,13 +183,13 @@ const Home = () => {
                                   editPost(post.id, newContent);
                                 }
                               }}
-                              className="flex items-center text-sm text-blue-500 hover:text-blue-700 mr-4 focus:outline-none"
+                              className="flex items-center text-base text-blue-500 hover:text-blue-700 mr-4 focus:outline-none"
                             >
                               <FiEdit className="mr-1" size={17} />
                             </button>
                             <button
-                              onClick={() => deletePost(post.id)}
-                              className="flex items-center text-sm text-red-500 hover:text-red-700 mr-4 focus:outline-none"
+                              onClick={() => confirmDeletePost(post.id)}
+                              className="flex items-center text-base text-red-500 hover:text-red-700 mr-4 focus:outline-none"
                             >
                               <FaTrashAlt className="mr-1" size={17} />
                             </button>
