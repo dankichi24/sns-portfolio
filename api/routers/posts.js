@@ -32,12 +32,19 @@ router.post(
 // 投稿一覧取得ルート（GETリクエスト）
 router.get("/", authenticateToken, postController.getPosts);
 
+router.get("/:id", authenticateToken, postController.getPostById);
+
 // いいねのトグルエンドポイント
 router.post("/like", authenticateToken, postController.toggleLike);
 
 // 編集と削除のルート
 // api/routers/posts.js
-router.put("/:postId", authenticateToken, postController.editPost);
+router.put(
+  "/:postId",
+  authenticateToken,
+  upload.single("image"),
+  postController.editPost
+);
 router.delete("/:postId", authenticateToken, postController.deletePost);
 
 module.exports = router;

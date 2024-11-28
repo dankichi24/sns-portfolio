@@ -108,9 +108,9 @@ const toggleLike = async (req, res) => {
 
 // 投稿を編集する関数
 const editPost = async (req, res) => {
-  console.log("Edit request received for post ID:", req.params.postId); // 追加
   const { postId } = req.params;
   const { content } = req.body;
+  const image = req.file ? `/uploads/${req.file.filename}` : undefined; // 画像がある場合、パスを設定
   const userId = req.user.userId;
 
   try {
@@ -128,9 +128,14 @@ const editPost = async (req, res) => {
         .json({ error: "この投稿を編集する権限がありません。" });
     }
 
+    const updatedData = { content };
+    if (image) {
+      updatedData.image = image;
+    }
+
     const updatedPost = await prisma.post.update({
       where: { id: Number(postId) },
-      data: { content },
+      data: updatedData,
     });
 
     res
@@ -179,10 +184,34 @@ const deletePost = async (req, res) => {
   }
 };
 
+const getPostById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: Number(id) },
+      include: {
+        user: { select: { id: true, username: true } },
+        likes: { select: { userId: true } },
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: "投稿が見つかりません。" });
+    }
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    res.status(500).json({ error: "投稿の取得に失敗しました。" });
+  }
+};
+
 module.exports = {
   createPost,
   getPosts,
   editPost,
   deletePost,
   toggleLike,
+  getPostById,
 };

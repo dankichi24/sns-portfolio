@@ -88,24 +88,6 @@ const Home = () => {
     document.body.style.overflow = "auto"; // モーダルを閉じたら背景のスクロールを有効に
   };
 
-  // 編集機能の関数
-  const editPost = async (postId: number, newContent: string) => {
-    try {
-      const response = await apiClient.put(`/api/posts/${postId}`, {
-        content: newContent,
-      });
-      setPosts(
-        posts.map((post) =>
-          post.id === postId
-            ? { ...post, content: response.data.post.content }
-            : post
-        )
-      );
-    } catch (error) {
-      console.error("Error editing post:", error);
-    }
-  };
-
   // 削除機能の関数（SweetAlert2を使用）
   const confirmDeletePost = (postId: number) => {
     MySwal.fire({
@@ -173,20 +155,11 @@ const Home = () => {
                       <div className="flex items-center">
                         {post.user.userId === userId && (
                           <>
-                            <button
-                              onClick={() => {
-                                const newContent = prompt(
-                                  "新しい内容を入力してください",
-                                  post.content
-                                );
-                                if (newContent) {
-                                  editPost(post.id, newContent);
-                                }
-                              }}
-                              className="flex items-center text-base text-blue-500 hover:text-blue-700 mr-4 focus:outline-none"
-                            >
-                              <FiEdit className="mr-1" size={17} />
-                            </button>
+                            <Link href={`/post/edit?id=${post.id}`}>
+                              <button className="flex items-center text-base text-blue-500 hover:text-blue-700 mr-4 focus:outline-none">
+                                <FiEdit className="mr-1" size={17} />
+                              </button>
+                            </Link>
                             <button
                               onClick={() => confirmDeletePost(post.id)}
                               className="flex items-center text-base text-red-500 hover:text-red-700 mr-4 focus:outline-none"
