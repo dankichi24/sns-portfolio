@@ -69,7 +69,7 @@ const CreatePost = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label className="block text-gray-600 font-medium mb-2 text-lg">
-              Content
+              本文
             </label>
             <textarea
               value={content}
@@ -81,7 +81,7 @@ const CreatePost = () => {
           </div>
           <div className="mb-6">
             <label className="block text-gray-600 font-medium mb-2 text-lg">
-              Image (optional)
+              画像
             </label>
             <input
               type="file"
@@ -108,13 +108,13 @@ const CreatePost = () => {
               onClick={() => router.push("/home")}
               className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition shadow-md"
             >
-              Cancel
+              キャンセル
             </button>
             <button
               type="submit"
               className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition shadow-md"
             >
-              Share
+              Shareする
             </button>
           </div>
         </form>

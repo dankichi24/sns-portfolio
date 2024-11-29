@@ -91,7 +91,7 @@ const EditPost = () => {
         </div>
         <div className="mb-6">
           <label className="block text-gray-600 font-medium mb-2 text-lg">
-            画像の更新（任意）:
+            画像の更新
           </label>
           <input
             type="file"
@@ -103,7 +103,7 @@ const EditPost = () => {
         {currentImageUrl && !preview && (
           <div className="mb-6">
             <label className="block text-gray-600 font-medium mb-2 text-lg">
-              現在の画像:
+              現在の画像
             </label>
             <img
               src={`http://localhost:5000${currentImageUrl}`}
