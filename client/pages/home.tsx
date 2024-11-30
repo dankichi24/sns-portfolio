@@ -1,36 +1,25 @@
+// pages/home.tsx
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FiEdit } from "react-icons/fi"; // アイコンをインポート
-import { FaTrashAlt } from "react-icons/fa"; // 削除アイコンもインポート
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import apiClient from "../lib/apiClient";
-import { useAuth } from "../lib/authContext"; // 認証コンテキストをインポート
+import { useAuth } from "../lib/authContext";
+import { Post } from "../types";
+import PostItem from "../components/PostItem";
+import Modal from "../components/Modal";
 
 // SweetAlert2をReactと統合
 const MySwal = withReactContent(Swal);
 
-// 投稿データの型定義
-interface Post {
-  id: number;
-  content: string;
-  image?: string;
-  user: {
-    userId: number; // userId として定義
-    username: string; // ユーザー名を表示
-  };
-  createdAt: string; // 投稿日時を追加
-  liked: boolean; // いいねの状態を追跡
-  likeCount: number; // いいね数を表示
-}
-
 const Home = () => {
   const { user, isLoading } = useAuth();
-  const userId = !isLoading && user ? user.userId : null; // 修正ポイント
+  const userId = !isLoading && user ? user.userId : null;
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの表示・非表示の状態
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); // 選択された画像のURL
-  const [animateLike, setAnimateLike] = useState<number | null>(null); // クリックエフェクト用
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [animateLike, setAnimateLike] = useState<number | null>(null);
 
   const fetchPosts = async () => {
     try {
@@ -38,7 +27,7 @@ const Home = () => {
       const modifiedData = response.data.map((post: Post) => ({
         ...post,
         user: {
-          userId: post.user.userId, // APIの`user.id`を`user.userId`に変換
+          userId: post.user.userId,
           username: post.user.username,
         },
       }));
@@ -56,7 +45,7 @@ const Home = () => {
           ? {
               ...post,
               liked: response.data.liked,
-              likeCount: response.data.likeCount, // サーバーから返された最新のlikeCountを使用
+              likeCount: response.data.likeCount,
             }
           : post
       );
@@ -64,7 +53,7 @@ const Home = () => {
 
       // いいねアニメーションをトリガー
       setAnimateLike(postId);
-      setTimeout(() => setAnimateLike(null), 300); // アニメーション後にリセット
+      setTimeout(() => setAnimateLike(null), 300);
     } catch (error) {
       console.error("Error toggling like:", error);
     }
@@ -78,17 +67,17 @@ const Home = () => {
   const openModal = (image: string) => {
     setSelectedImage(image);
     setIsModalOpen(true);
-    document.body.style.overflow = "hidden"; // モーダルを開いたら背景のスクロールを無効に
+    document.body.style.overflow = "hidden";
   };
 
   // モーダルを閉じる関数
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedImage(null);
-    document.body.style.overflow = "auto"; // モーダルを閉じたら背景のスクロールを有効に
+    document.body.style.overflow = "auto";
   };
 
-  // 削除機能の関数（SweetAlert2を使用）
+  // 削除確認の関数（SweetAlert2を使用）
   const confirmDeletePost = (postId: number) => {
     MySwal.fire({
       title: "削除してもよろしいですか？",
@@ -99,7 +88,7 @@ const Home = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "削除",
       cancelButtonText: "キャンセル",
-      reverseButtons: true, // ボタンの順序を逆にする
+      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         deletePost(postId);
@@ -138,78 +127,17 @@ const Home = () => {
         <div className="post-list">
           <ul className="space-y-6 max-w-4xl mx-auto">
             {posts.length > 0 ? (
-              posts.map((post) => {
-                // ログを追加して確認する
-                console.log("Current userId:", userId);
-                console.log("Post userId:", post.user.userId);
-
-                return (
-                  <li
-                    key={post.id}
-                    className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl"
-                  >
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-lg font-semibold text-blue-600">
-                        {post.user.username}
-                      </span>
-                      <div className="flex items-center">
-                        {post.user.userId === userId && (
-                          <>
-                            <Link href={`/post/edit?id=${post.id}`}>
-                              <button className="flex items-center text-base text-blue-500 hover:text-blue-700 mr-4 focus:outline-none">
-                                <FiEdit className="mr-1" size={17} />
-                              </button>
-                            </Link>
-                            <button
-                              onClick={() => confirmDeletePost(post.id)}
-                              className="flex items-center text-base text-red-500 hover:text-red-700 mr-4 focus:outline-none"
-                            >
-                              <FaTrashAlt className="mr-1" size={17} />
-                            </button>
-                          </>
-                        )}
-                        <span className="text-sm text-gray-500">
-                          {new Date(post.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-gray-700 mb-4 leading-relaxed">
-                      {post.content}
-                    </div>
-                    {post.image && (
-                      <img
-                        src={`http://localhost:5000${post.image}`}
-                        alt="Post image"
-                        className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer"
-                        style={{ maxHeight: "300px", objectFit: "cover" }}
-                        onClick={() =>
-                          openModal(`http://localhost:5000${post.image}`)
-                        }
-                      />
-                    )}
-
-                    {/* いいねボタンとカウント */}
-                    <div className="flex justify-end items-center mt-4">
-                      <button
-                        onClick={() => toggleLike(post.id)}
-                        className={`mr-2 text-xl ${
-                          post.liked ? "text-yellow-500" : "text-gray-500"
-                        } ${animateLike === post.id ? "animate-pop" : ""}`}
-                        style={{
-                          textShadow: post.liked
-                            ? "0px 0px 2px rgba(0, 0, 0, 0.3), 0px 0px 4px rgba(0, 0, 0, 0.3)"
-                            : "0px 0px 4px rgba(0, 0, 0, 0.3)",
-                        }}
-                      >
-                        {post.liked ? "★" : "☆"}
-                      </button>
-                      <span className="text-gray-600 text-lg">
-                        {post.likeCount} nice!
-                      </span>
-                    </div>
-                  </li>
-                );
-              })
+              posts.map((post) => (
+                <PostItem
+                  key={post.id}
+                  post={post}
+                  userId={userId}
+                  toggleLike={toggleLike}
+                  confirmDeletePost={confirmDeletePost}
+                  openModal={openModal}
+                  animateLike={animateLike}
+                />
+              ))
             ) : (
               <li>投稿がありません。</li>
             )}
@@ -217,25 +145,11 @@ const Home = () => {
         </div>
 
         {/* モーダルの実装 */}
-        {isModalOpen && selectedImage && (
-          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-4 rounded shadow-lg max-w-screen-lg max-h-screen overflow-auto">
-              {/* 画像の最大幅と高さを制限 */}
-              <img
-                src={selectedImage}
-                alt="Large view"
-                className="max-w-full max-h-screen mx-auto"
-                style={{ objectFit: "contain" }} // 画像を収めるためのスタイル
-              />
-              <button
-                className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
-                onClick={closeModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
+        <Modal
+          isModalOpen={isModalOpen}
+          selectedImage={selectedImage}
+          closeModal={closeModal}
+        />
       </div>
     </div>
   );
