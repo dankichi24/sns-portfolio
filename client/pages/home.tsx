@@ -1,5 +1,3 @@
-// pages/home.tsx
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Swal from "sweetalert2";
@@ -16,6 +14,9 @@ const MySwal = withReactContent(Swal);
 const Home = () => {
   const { user, isLoading } = useAuth();
   const userId = !isLoading && user ? user.userId : null;
+
+  // ローディング状態のstateを追加
+  const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -23,6 +24,7 @@ const Home = () => {
 
   const fetchPosts = async () => {
     try {
+      setLoading(true); // データ取得開始前にローディングをtrueにする
       const response = await apiClient.get("/api/posts");
       const modifiedData = response.data.map((post: Post) => ({
         ...post,
@@ -34,6 +36,8 @@ const Home = () => {
       setPosts(modifiedData);
     } catch (error) {
       console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false); // データ取得完了後にローディングをfalseにする
     }
   };
 
@@ -123,26 +127,31 @@ const Home = () => {
           </Link>
         </div>
 
-        {/* タイムライン風の投稿リスト */}
-        <div className="post-list">
-          <ul className="space-y-6 max-w-4xl mx-auto">
-            {posts.length > 0 ? (
-              posts.map((post) => (
-                <PostItem
-                  key={post.id}
-                  post={post}
-                  userId={userId}
-                  toggleLike={toggleLike}
-                  confirmDeletePost={confirmDeletePost}
-                  openModal={openModal}
-                  animateLike={animateLike}
-                />
-              ))
-            ) : (
-              <li>投稿がありません。</li>
-            )}
-          </ul>
-        </div>
+        {/* ローディング状態の表示 */}
+        {loading ? (
+          <p className="text-center text-lg text-gray-500">ローディング中...</p>
+        ) : (
+          /* タイムライン風の投稿リスト */
+          <div className="post-list">
+            <ul className="space-y-6 max-w-4xl mx-auto">
+              {posts.length > 0 ? (
+                posts.map((post) => (
+                  <PostItem
+                    key={post.id}
+                    post={post}
+                    userId={userId}
+                    toggleLike={toggleLike}
+                    confirmDeletePost={confirmDeletePost}
+                    openModal={openModal}
+                    animateLike={animateLike}
+                  />
+                ))
+              ) : (
+                <li>投稿がありません。</li>
+              )}
+            </ul>
+          </div>
+        )}
 
         {/* モーダルの実装 */}
         <Modal
