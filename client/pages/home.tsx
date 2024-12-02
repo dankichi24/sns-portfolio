@@ -83,6 +83,9 @@ const Home = () => {
 
   // 削除確認の関数（SweetAlert2を使用）
   const confirmDeletePost = (postId: number) => {
+    // モーダルを開くときにスクロールを無効に
+    document.body.style.overflow = "hidden";
+
     MySwal.fire({
       title: "削除してもよろしいですか？",
       text: "この操作は元に戻せません。",
@@ -94,6 +97,9 @@ const Home = () => {
       cancelButtonText: "キャンセル",
       reverseButtons: true,
     }).then((result) => {
+      // モーダルを閉じたときにスクロールを再開
+      document.body.style.overflow = "auto";
+
       if (result.isConfirmed) {
         deletePost(postId);
       }
