@@ -135,7 +135,7 @@ const Home = () => {
 
         {/* ローディング状態の表示 */}
         {loading ? (
-          <p className="text-center text-lg text-gray-500">ローディング中...</p>
+          <p className="text-center text-lg text-gray-500">Now Loading...</p>
         ) : (
           /* タイムライン風の投稿リスト */
           <div className="post-list">
