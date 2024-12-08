@@ -1,14 +1,18 @@
 import Link from "next/link";
+import { useRouter } from "next/router"; // useRouter をインポート
 import { useAuth } from "../lib/authContext";
 
 const Navbar = () => {
   const { user, logout, isLoading } = useAuth(); // isLoading も追加
+  const router = useRouter(); // 現在のルートを取得
 
   console.log("User in Navbar:", user); // ここでログを確認
 
   if (isLoading) {
     return null; // ローディング中は表示しない（必要に応じてスピナーなどに変更可）
   }
+
+  const isMypage = router.pathname === "/mypage"; // 現在のページが "/mypage" かどうかを判定
 
   return (
     <header className="w-full bg-indigo-900 text-white py-4 sticky top-0 z-50">
@@ -25,10 +29,11 @@ const Navbar = () => {
               <span>{user.username}さん</span>{" "}
               {/* ログイン中のユーザー名を表示 */}
               <Link
-                href="/mypage"
+                href={isMypage ? "/home" : "/mypage"} // 条件によってボタンのリンクを切り替え
                 className="bg-white text-indigo-900 px-4 py-2 rounded font-bold hover:bg-gray-200 transition duration-300"
               >
-                マイページ
+                {isMypage ? "HOME" : "マイページ"}{" "}
+                {/* ボタンのテキストを切り替え */}
               </Link>
               <button
                 onClick={logout}
