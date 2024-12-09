@@ -207,9 +207,43 @@ const getPostById = async (req, res) => {
   }
 };
 
+// 自分の投稿を取得する関数
+const getMyPosts = async (req, res) => {
+  const userId = req.user.userId; // ログイン中のユーザーIDを取得
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        userId: userId, // ログイン中のユーザーの投稿のみ取得
+      },
+      include: {
+        user: { select: { id: true, username: true } }, // ユーザーIDとユーザー名を取得
+        likes: { select: { userId: true } }, // likes テーブルから userId を取得
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const postsWithLikeStatus = posts.map((post) => ({
+      ...post,
+      user: {
+        userId: post.user.id, // ユーザーIDを userId としてセット
+        username: post.user.username,
+      },
+      liked: post.likes.some((like) => like.userId === userId),
+      likeCount: post.likes.length,
+    }));
+
+    res.status(200).json(postsWithLikeStatus);
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    res.status(500).json({ error: "自分の投稿の取得に失敗しました。" });
+  }
+};
+
 module.exports = {
   createPost,
   getPosts,
+  getMyPosts, // 新規追加
   editPost,
   deletePost,
   toggleLike,

@@ -32,6 +32,8 @@ router.post(
 // 投稿一覧取得ルート（GETリクエスト）
 router.get("/", authenticateToken, postController.getPosts);
 
+router.get("/my-posts", authenticateToken, postController.getMyPosts);
+
 router.get("/:id", authenticateToken, postController.getPostById);
 
 // いいねのトグルエンドポイント
