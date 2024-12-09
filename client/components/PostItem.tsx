@@ -1,5 +1,3 @@
-// components/PostItem.tsx
-
 import Link from "next/link";
 import { FiEdit } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
@@ -25,7 +23,8 @@ const PostItem: React.FC<PostItemProps> = ({
   return (
     <li className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
       <div className="flex justify-between items-center mb-4">
-        <span className="text-lg font-semibold text-blue-600">
+        {/* 名前のフォントサイズを少し大きく設定 */}
+        <span className="text-xl font-semibold text-blue-600">
           {post.user.username}
         </span>
         <div className="flex items-center">
@@ -49,6 +48,7 @@ const PostItem: React.FC<PostItemProps> = ({
           </span>
         </div>
       </div>
+      {/* 本文のスタイルを元に戻す */}
       <div className="text-gray-700 mb-4 leading-relaxed">{post.content}</div>
       {post.image && (
         <img

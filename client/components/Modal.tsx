@@ -1,5 +1,3 @@
-// components/Modal.tsx
-
 interface ModalProps {
   isModalOpen: boolean;
   selectedImage: string | null;
@@ -25,12 +23,14 @@ const Modal: React.FC<ModalProps> = ({
           className="max-w-full max-h-screen mx-auto"
           style={{ objectFit: "contain" }}
         />
-        <button
-          className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
-          onClick={closeModal}
-        >
-          閉じる
-        </button>
+        <div className="flex justify-center mt-4">
+          <button
+            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
+            onClick={closeModal}
+          >
+            閉じる
+          </button>
+        </div>
       </div>
     </div>
   );
