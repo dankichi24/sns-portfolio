@@ -30,17 +30,18 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
     fetchMyPosts();
   }, [active]);
 
-  if (loading) {
-    return <p className="text-center text-gray-600">Now Loading...</p>;
-  }
-
-  if (myPosts.length === 0) {
-    return <p className="text-center text-gray-600">まだ投稿がありません。</p>;
-  }
-
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="max-w-4xl mx-auto p-4">
+    <div>
+      {/* 見出しを追加 */}
+      <h2 className="text-2xl font-bold text-indigo-900 mb-6 text-center">
+        Share履歴
+      </h2>
+
+      {loading ? (
+        <p className="text-center text-gray-600">Now Loading...</p>
+      ) : myPosts.length === 0 ? (
+        <p className="text-center text-gray-600">まだ投稿がありません。</p>
+      ) : (
         <div className="post-list space-y-6">
           <ul className="space-y-6">
             {myPosts.map((post) => (
@@ -56,7 +57,7 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
             ))}
           </ul>
         </div>
-      </div>
+      )}
     </div>
   );
 };
