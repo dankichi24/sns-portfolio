@@ -21,7 +21,7 @@ const PostItem: React.FC<PostItemProps> = ({
   animateLike,
 }) => {
   return (
-    <li className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
+    <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
       <div className="flex justify-between items-center mb-4">
         {/* 名前のフォントサイズを少し大きく設定 */}
         <span className="text-xl font-semibold text-blue-600">
@@ -77,7 +77,7 @@ const PostItem: React.FC<PostItemProps> = ({
         </button>
         <span className="text-gray-600 text-lg">{post.likeCount} nice!</span>
       </div>
-    </li>
+    </div>
   );
 };
 

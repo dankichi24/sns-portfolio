@@ -240,6 +240,41 @@ const getMyPosts = async (req, res) => {
   }
 };
 
+// 自分がお気に入りした投稿を取得する関数
+const getFavoritePosts = async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const favoritePosts = await prisma.post.findMany({
+      where: {
+        likes: {
+          some: { userId: userId },
+        },
+      },
+      include: {
+        user: { select: { id: true, username: true } },
+        likes: { select: { userId: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const postsWithLikeStatus = favoritePosts.map((post) => ({
+      ...post,
+      user: {
+        userId: post.user.id,
+        username: post.user.username,
+      },
+      liked: post.likes.some((like) => like.userId === userId),
+      likeCount: post.likes.length,
+    }));
+
+    res.status(200).json(postsWithLikeStatus);
+  } catch (error) {
+    console.error("Error fetching favorite posts:", error);
+    res.status(500).json({ error: "お気に入り投稿の取得に失敗しました。" });
+  }
+};
+
 module.exports = {
   createPost,
   getPosts,
@@ -248,4 +283,5 @@ module.exports = {
   deletePost,
   toggleLike,
   getPostById,
+  getFavoritePosts,
 };

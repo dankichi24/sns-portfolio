@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../lib/authContext";
 import { useRouter } from "next/router";
 import ShareHistory from "../components/ShareHistory";
+import ShareFavorites from "../components/ShareFavorites";
 
 const MyPage = () => {
   const { user } = useAuth();
@@ -90,12 +91,10 @@ const MyPage = () => {
             />
           )}
           {activeTab === "favorites" && (
-            <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-900 mb-4">
-                お気に入り
-              </div>
-              <p>ここにお気に入りが表示されます。</p>
-            </div>
+            <ShareFavorites
+              userId={user.userId}
+              active={activeTab === "favorites"}
+            />
           )}
         </div>
       </div>

@@ -34,6 +34,9 @@ router.get("/", authenticateToken, postController.getPosts);
 
 router.get("/my-posts", authenticateToken, postController.getMyPosts);
 
+// 自分がお気に入りした投稿を取得
+router.get("/favorites", authenticateToken, postController.getFavoritePosts);
+
 router.get("/:id", authenticateToken, postController.getPostById);
 
 // いいねのトグルエンドポイント
