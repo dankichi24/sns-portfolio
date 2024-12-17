@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import apiClient from "../lib/apiClient";
 import PostItem from "../components/PostItem";
 import { Post } from "../types";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 interface ShareFavoritesProps {
   userId: number;
@@ -59,6 +63,38 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
     }
   };
 
+  // 削除確認アラート
+  const confirmDeletePost = (postId: number) => {
+    MySwal.fire({
+      title: "削除してもよろしいですか？",
+      text: "この操作は元に戻せません。",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "削除",
+      cancelButtonText: "キャンセル",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDeletePost(postId);
+      }
+    });
+  };
+
+  // 投稿削除処理
+  const handleDeletePost = async (postId: number) => {
+    try {
+      await apiClient.delete(`/api/posts/${postId}`);
+      setFavoritePosts((prevPosts) =>
+        prevPosts.filter((post) => post.id !== postId)
+      );
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      MySwal.fire("エラー", "削除中に問題が発生しました。", "error");
+    }
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-indigo-900 mb-6 text-center">
@@ -78,8 +114,8 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
               key={post.id}
               post={post}
               userId={userId}
-              toggleLike={() => handleUnlike(post.id)} // いいね解除時
-              confirmDeletePost={() => {}}
+              toggleLike={() => handleUnlike(post.id)} // いいね解除処理
+              confirmDeletePost={() => confirmDeletePost(post.id)} // 削除確認アラート
               openModal={() => {}}
               animateLike={animateLike}
             />
