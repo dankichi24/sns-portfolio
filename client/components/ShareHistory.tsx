@@ -15,6 +15,7 @@ interface ShareHistoryProps {
 const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
+  const [animateLike, setAnimateLike] = useState<number | null>(null); // アニメーション管理
 
   useEffect(() => {
     if (!active) return;
@@ -33,6 +34,30 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
 
     fetchMyPosts();
   }, [active]);
+
+  // いいねのトグル処理
+  const toggleLike = async (postId: number) => {
+    try {
+      setAnimateLike(postId); // アニメーションを開始
+
+      const response = await apiClient.post("/api/posts/like", { postId });
+      setMyPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                liked: response.data.liked, // APIのレスポンスに従って更新
+                likeCount: response.data.likeCount,
+              }
+            : post
+        )
+      );
+
+      setTimeout(() => setAnimateLike(null), 300); // アニメーション終了
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
 
   const confirmDeletePost = (postId: number) => {
     MySwal.fire({
@@ -78,10 +103,10 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
               key={post.id}
               post={post}
               userId={userId}
-              confirmDeletePost={() => confirmDeletePost(post.id)} // 警告アラート追加
-              toggleLike={() => {}}
+              confirmDeletePost={() => confirmDeletePost(post.id)} // 削除機能
+              toggleLike={() => toggleLike(post.id)} // いいねのトグル
               openModal={() => {}}
-              animateLike={null}
+              animateLike={animateLike} // アニメーション管理
             />
           ))}
         </div>
