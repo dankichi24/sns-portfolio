@@ -4,7 +4,7 @@ import apiClient from "../../lib/apiClient";
 
 const EditPost = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { id, returnUrl } = router.query; // 編集元のURLをクエリとして受け取る
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
@@ -33,7 +33,6 @@ const EditPost = () => {
       const file = event.target.files[0];
       setImage(file);
 
-      // 新しい画像のプレビューを設定
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -58,22 +57,26 @@ const EditPost = () => {
         },
       });
 
-      router.push("/home");
+      router.push((returnUrl as string) || "/home"); // 編集元のページに戻る
     } catch (error) {
       console.error("Error updating post:", error);
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   const handleCancel = () => {
-    router.push("/home");
+    router.push((returnUrl as string) || "/home"); // 編集元のページに戻る
   };
 
+  if (isLoading) {
+    return (
+      <div>
+        <p className="text-center text-lg text-gray-500">Now Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-12 rounded-xl shadow-xl w-full max-w-lg">
         <h2 className="text-4xl font-bold mb-8 text-center text-gray-700">
           Edit Post
@@ -101,30 +104,18 @@ const EditPost = () => {
           />
         </div>
         {currentImageUrl && !preview && (
-          <div className="mb-6">
-            <label className="block text-gray-600 font-medium mb-2 text-lg">
-              現在の画像
-            </label>
-            <img
-              src={`http://localhost:5000${currentImageUrl}`}
-              alt="Current post image"
-              className="w-full h-auto rounded-lg shadow-md"
-              style={{ maxHeight: "300px", objectFit: "cover" }}
-            />
-          </div>
+          <img
+            src={`http://localhost:5000${currentImageUrl}`}
+            alt="Current post image"
+            className="w-full h-auto rounded-lg shadow-md mb-6"
+          />
         )}
         {preview && (
-          <div className="mb-6">
-            <label className="block text-gray-600 font-medium mb-2 text-lg">
-              新しい画像のプレビュー:
-            </label>
-            <img
-              src={preview}
-              alt="New post image"
-              className="w-full h-auto rounded-lg shadow-md"
-              style={{ maxHeight: "300px", objectFit: "cover" }}
-            />
-          </div>
+          <img
+            src={preview}
+            alt="New post preview"
+            className="w-full h-auto rounded-lg shadow-md mb-6"
+          />
         )}
         <div className="flex justify-between mt-8">
           <button

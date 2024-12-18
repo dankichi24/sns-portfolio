@@ -118,6 +118,7 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
               confirmDeletePost={() => confirmDeletePost(post.id)} // 削除確認アラート
               openModal={() => {}}
               animateLike={animateLike}
+              activeTab="favorites" // 追加
             />
           ))}
         </div>

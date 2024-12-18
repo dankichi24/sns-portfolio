@@ -10,6 +10,7 @@ interface PostItemProps {
   confirmDeletePost: (postId: number) => void;
   openModal: (image: string) => void;
   animateLike: number | null;
+  activeTab: string; // 追加
 }
 
 const PostItem: React.FC<PostItemProps> = ({
@@ -19,6 +20,7 @@ const PostItem: React.FC<PostItemProps> = ({
   confirmDeletePost,
   openModal,
   animateLike,
+  activeTab = "home", // デフォルト値を設定
 }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
@@ -30,7 +32,15 @@ const PostItem: React.FC<PostItemProps> = ({
         <div className="flex items-center">
           {post.user.userId === userId && (
             <>
-              <Link href={`/post/edit?id=${post.id}`}>
+              <Link
+                href={{
+                  pathname: `/post/edit`,
+                  query: {
+                    id: post.id,
+                    returnUrl: `${window.location.pathname}?activeTab=${activeTab}`,
+                  },
+                }}
+              >
                 <button className="flex items-center text-base text-blue-500 hover:text-blue-700 mr-4 focus:outline-none">
                   <FiEdit className="mr-1" size={17} />
                 </button>

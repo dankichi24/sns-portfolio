@@ -107,6 +107,7 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
               toggleLike={() => toggleLike(post.id)} // いいねのトグル
               openModal={() => {}}
               animateLike={animateLike} // アニメーション管理
+              activeTab="history" // 追加
             />
           ))}
         </div>

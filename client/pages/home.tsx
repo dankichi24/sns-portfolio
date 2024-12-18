@@ -150,6 +150,7 @@ const Home = () => {
                     confirmDeletePost={confirmDeletePost}
                     openModal={openModal}
                     animateLike={animateLike}
+                    activeTab="home" // 追加
                   />
                 ))
               ) : (

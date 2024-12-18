@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../lib/authContext";
 import { useRouter } from "next/router";
 import ShareHistory from "../components/ShareHistory";
@@ -8,6 +8,13 @@ const MyPage = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile");
+
+  // 編集後に戻る場合、URLのクエリから activeTab を取得
+  useEffect(() => {
+    if (router.query.activeTab) {
+      setActiveTab(router.query.activeTab as string);
+    }
+  }, [router.query.activeTab]);
 
   if (!user) {
     router.push("/auth/signin");
@@ -55,33 +62,7 @@ const MyPage = () => {
               <div className="text-2xl font-bold text-indigo-900 mb-4">
                 プロフィール
               </div>
-              <div className="flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-12 h-12 text-gray-500"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 4.5c1.988 0 3.75 1.56 3.75 3.5s-1.762 3.5-3.75 3.5-3.75-1.56-3.75-3.5 1.762-3.5 3.75-3.5z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 14c-3.315 0-6 2.805-6 6.25v.5h12v-.5c0-3.445-2.685-6.25-6-6.25z"
-                    />
-                  </svg>
-                </div>
-                <div className="mt-4 text-lg font-semibold">
-                  {user.username || "ユーザー名"}
-                </div>
-                <div className="text-gray-600">{user.email}</div>
-              </div>
+              <div className="text-lg">{user.username}</div>
             </div>
           )}
           {activeTab === "history" && (
