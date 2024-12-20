@@ -128,7 +128,7 @@ const Home = () => {
         <div className="flex justify-end mb-8">
           <Link href="/post/create">
             <button className="bg-blue-500 text-white py-3 px-6 rounded hover:bg-blue-600 transition duration-300 shadow-md">
-              Shareする
+              投稿
             </button>
           </Link>
         </div>

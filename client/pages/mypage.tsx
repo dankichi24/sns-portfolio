@@ -3,13 +3,13 @@ import { useAuth } from "../lib/authContext";
 import { useRouter } from "next/router";
 import ShareHistory from "../components/ShareHistory";
 import ShareFavorites from "../components/ShareFavorites";
+import Profile from "../components/Profile";
 
 const MyPage = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile");
 
-  // 編集後に戻る場合、URLのクエリから activeTab を取得
   useEffect(() => {
     if (router.query.activeTab) {
       setActiveTab(router.query.activeTab as string);
@@ -57,14 +57,7 @@ const MyPage = () => {
           </button>
         </div>
         <div className="mt-6">
-          {activeTab === "profile" && (
-            <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-900 mb-4">
-                プロフィール
-              </div>
-              <div className="text-lg">{user.username}</div>
-            </div>
-          )}
+          {activeTab === "profile" && <Profile username={user.username} />}
           {activeTab === "history" && (
             <ShareHistory
               userId={user.userId}
