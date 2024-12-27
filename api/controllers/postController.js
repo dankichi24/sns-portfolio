@@ -217,7 +217,7 @@ const getMyPosts = async (req, res) => {
         userId: userId, // ログイン中のユーザーの投稿のみ取得
       },
       include: {
-        user: { select: { id: true, username: true } }, // ユーザーIDとユーザー名を取得
+        user: { select: { id: true, username: true } }, // 常に最新のユーザー名を取得
         likes: { select: { userId: true } }, // likes テーブルから userId を取得
       },
       orderBy: { createdAt: "desc" },
@@ -227,7 +227,7 @@ const getMyPosts = async (req, res) => {
       ...post,
       user: {
         userId: post.user.id, // ユーザーIDを userId としてセット
-        username: post.user.username,
+        username: post.user.username, // 最新の username を利用
       },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,

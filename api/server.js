@@ -4,6 +4,7 @@ const app = express();
 const path = require("path"); // pathモジュールをインポート
 const authRoutes = require("./routers/auth");
 const postRoutes = require("./routers/posts");
+const userRouter = require("./routers/user"); // ユーザールーターをインポート
 
 const PORT = 5000;
 
@@ -18,7 +19,8 @@ app.use(
   })
 );
 
-app.use(express.json()); // JSON形式のリクエストボディを解析
+// JSON形式のリクエストボディを解析
+app.use(express.json());
 
 // トップレベルのルートに対応するレスポンスを追加
 app.get("/", (req, res) => {
@@ -31,9 +33,13 @@ app.use("/api/auth", authRoutes);
 // 投稿ルートを追加
 app.use("/api/posts", postRoutes);
 
-// アップロードされたファイルを静的に提供
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // ここを追加
+// ユーザールートを追加
+app.use("/api/users", userRouter);
 
+// アップロードされたファイルを静的に提供
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // 静的ファイルの提供
+
+// サーバーを起動
 app.listen(PORT, () => console.log(`server is running on Port ${PORT}`));
 
 // すべてのルートにマッチしなかった場合の404エラーハンドリング

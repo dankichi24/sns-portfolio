@@ -115,6 +115,7 @@ const getMe = async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
     });
+    console.log("Fetched user:", user); // デバッグログを追加
 
     if (!user) {
       return res.status(404).json({ error: "ユーザーが見つかりません" });

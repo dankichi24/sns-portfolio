@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (user: User) => void;
   logout: () => void;
   isLoading: boolean;
+  updateUser: (updatedData: Partial<User>) => void; // 追加
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,7 +25,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    console.log("Token found:", token);
 
     if (token) {
       apiClient
@@ -32,46 +32,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          console.log("APIからのユーザーデータ:", response.data); // デバッグログ
-
-          // APIからuserIdが返ってきていることを確認してセット
           if (response.data.userId) {
             setUser({
               userId: response.data.userId,
               username: response.data.username,
               email: response.data.email,
             });
-          } else {
-            console.error("User data is missing userId:", response.data);
           }
         })
-        .catch((error) => {
-          console.error("Error fetching user:", error);
-          localStorage.removeItem("authToken");
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        .catch(() => localStorage.removeItem("authToken"))
+        .finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);
     }
   }, []);
+
   const login = (userData: User) => {
     setUser(userData);
+  };
+
+  const updateUser = (updatedData: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) {
+        throw new Error("User is not defined");
+      }
+      return { ...prev, ...updatedData };
+    });
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("authToken");
-    router.push("/"); // ログアウト後にリダイレクト
+    router.push("/");
   };
 
   if (isLoading) {
-    return <div>Loading...</div>; // ローディング中の表示
+    return <div>Loading...</div>;
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, updateUser, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

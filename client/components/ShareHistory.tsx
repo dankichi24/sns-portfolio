@@ -17,23 +17,26 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   const [loading, setLoading] = useState(false);
   const [animateLike, setAnimateLike] = useState<number | null>(null); // アニメーション管理
 
+  // 投稿データを取得する関数
+  const fetchMyPosts = async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get("/api/posts/my-posts");
+      setMyPosts(response.data);
+      console.log("取得した投稿データ:", response.data);
+    } catch (error) {
+      console.error("Error fetching my posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // データ取得を行う useEffect
   useEffect(() => {
-    if (!active) return;
-
-    const fetchMyPosts = async () => {
-      setLoading(true);
-      try {
-        const response = await apiClient.get("/api/posts/my-posts");
-        setMyPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching my posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMyPosts();
-  }, [active]);
+    if (active) {
+      fetchMyPosts(); // activeがtrueのときに投稿データを取得
+    }
+  }, [active, userId]); // active または userId が変わったときに実行
 
   // いいねのトグル処理
   const toggleLike = async (postId: number) => {

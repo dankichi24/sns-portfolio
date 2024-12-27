@@ -13,6 +13,12 @@ apiClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // キャッシュ無効化のヘッダーを追加
+  config.headers["Cache-Control"] = "no-cache";
+  config.headers["Pragma"] = "no-cache";
+  config.headers["Expires"] = "0";
+
   return config;
 });
 
