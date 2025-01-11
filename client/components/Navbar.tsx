@@ -1,39 +1,71 @@
 import Link from "next/link";
-import { useRouter } from "next/router"; // useRouter をインポート
+import { useRouter } from "next/router";
 import { useAuth } from "../lib/authContext";
+import { useEffect } from "react";
 
 const Navbar = () => {
-  const { user, logout, isLoading } = useAuth(); // isLoading も追加
-  const router = useRouter(); // 現在のルートを取得
+  const { user, logout, login, isLoading } = useAuth();
+  const router = useRouter();
 
-  console.log("User in Navbar:", user); // ここでログを確認
+  console.log("User in Navbar:", user);
+
+  useEffect(() => {
+    // ユーザー情報が無い場合、再取得
+    if (!user) {
+      const fetchUser = async () => {
+        try {
+          const response = await fetch("http://localhost:5000/api/auth/me", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            login(data.user); // 最新のユーザー情報を反映
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        }
+      };
+      fetchUser();
+    }
+  }, [user, login]);
 
   if (isLoading) {
-    return null; // ローディング中は表示しない（必要に応じてスピナーなどに変更可）
+    return null; // ロード中は何も描画しない
   }
 
-  const isMypage = router.pathname === "/mypage"; // 現在のページが "/mypage" かどうかを判定
+  const isMypage = router.pathname === "/mypage";
 
   return (
     <header className="w-full bg-indigo-900 text-white py-4 sticky top-0 z-50">
       <div className="w-full flex justify-between items-center px-12">
         <Link
-          href={user ? "/home" : "/"} // user が存在する場合 /home に移動、そうでない場合 /
+          href={user ? "/home" : "/"}
           className="text-2xl font-bold hover:opacity-75 transition-opacity duration-300"
         >
           Gaming Device Share
         </Link>
-        <div className="flex space-x-3">
+        <div className="flex items-center space-x-3">
           {user ? (
             <>
-              <span>{user.username}さん</span>{" "}
-              {/* ログイン中のユーザー名を表示 */}
+              <span className="flex items-center space-x-2">
+                <img
+                  src={`http://localhost:5000${
+                    user.image || "/uploads/default-profile.png"
+                  }`}
+                  alt="プロフィール画像"
+                  className="w-8 h-8 rounded-full border-2 border-white"
+                />
+                <span className="text-sm font-semibold">
+                  {user.username}さん
+                </span>
+              </span>
               <Link
-                href={isMypage ? "/home" : "/mypage"} // 条件によってボタンのリンクを切り替え
+                href={isMypage ? "/home" : "/mypage"}
                 className="bg-white text-indigo-900 px-4 py-2 rounded font-bold hover:bg-gray-200 transition duration-300"
               >
-                {isMypage ? "HOME" : "マイページ"}{" "}
-                {/* ボタンのテキストを切り替え */}
+                {isMypage ? "HOME" : "マイページ"}
               </Link>
               <button
                 onClick={logout}

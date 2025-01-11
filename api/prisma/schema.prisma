@@ -3,36 +3,37 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // DBのプロバイダーがPostgreSQLであることを確認
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  username String   @unique
-  email    String   @unique
-  password String
-  posts    Post[]
-  likes    Like[]   // UserとLikeのリレーション
+  id           Int     @id @default(autoincrement())
+  username     String  @unique
+  email        String  @unique
+  password     String
+  image        String?
+  likes        Like[]
+  posts        Post[]
 }
 
 model Post {
   id        Int      @id @default(autoincrement())
   content   String
+  createdAt DateTime @default(now())
   image     String?
   userId    Int
+  likes     Like[]
   user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  likes     Like[]   // PostとLikeのリレーション
 }
 
 model Like {
   id        Int      @id @default(autoincrement())
   userId    Int
   postId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, postId]) // ユーザーが同じ投稿に対して一度だけ「いいね」できるようにする
+  @@unique([userId, postId])
 }

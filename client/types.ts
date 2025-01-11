@@ -4,11 +4,12 @@ export interface Post {
   id: number;
   content: string;
   image?: string;
+  createdAt: string;
   user: {
-    userId: number; // ユーザーID
-    username: string; // ユーザー名
+    userId: number;
+    username: string;
+    image?: string; // プロフィール画像
   };
-  createdAt: string; // 投稿日時
-  liked: boolean; // いいねの状態
-  likeCount: number; // いいね数
+  liked: boolean;
+  likeCount: number;
 }

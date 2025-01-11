@@ -31,8 +31,10 @@ const Home = () => {
         user: {
           userId: post.user.userId,
           username: post.user.username,
+          image: post.user.image || "/uploads/default-profile.png", // デフォルト画像の処理も追加
         },
       }));
+
       setPosts(modifiedData);
     } catch (error) {
       console.error("Error fetching posts:", error);

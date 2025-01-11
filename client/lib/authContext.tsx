@@ -2,10 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import apiClient from "./apiClient";
 import { useRouter } from "next/router";
 
-interface User {
+export interface User {
   userId: number;
   username: string;
   email: string;
+  image?: string; // 新しいプロパティを追加
 }
 
 interface AuthContextType {
@@ -37,6 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               userId: response.data.userId,
               username: response.data.username,
               email: response.data.email,
+              image: response.data.image, // プロフィール画像のパスを追加
             });
           }
         })

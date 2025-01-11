@@ -44,8 +44,8 @@ const getPosts = async (req, res) => {
   try {
     const posts = await prisma.post.findMany({
       include: {
-        user: { select: { id: true, username: true } }, // ユーザーIDとユーザー名を取得
-        likes: { select: { userId: true } }, // likes テーブルから userId を取得
+        user: { select: { id: true, username: true, image: true } }, // ユーザー画像を含める
+        likes: { select: { userId: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -54,8 +54,9 @@ const getPosts = async (req, res) => {
     const postsWithLikeStatus = posts.map((post) => ({
       ...post,
       user: {
-        userId: post.user.id, // ユーザーIDを userId としてセット
+        userId: post.user.id,
         username: post.user.username,
+        image: post.user.image || "/uploads/default-profile.png", // デフォルト画像を設定
       },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,
@@ -217,7 +218,7 @@ const getMyPosts = async (req, res) => {
         userId: userId, // ログイン中のユーザーの投稿のみ取得
       },
       include: {
-        user: { select: { id: true, username: true } }, // 常に最新のユーザー名を取得
+        user: { select: { id: true, username: true, image: true } }, // 常に最新のユーザー名を取得
         likes: { select: { userId: true } }, // likes テーブルから userId を取得
       },
       orderBy: { createdAt: "desc" },
@@ -226,8 +227,9 @@ const getMyPosts = async (req, res) => {
     const postsWithLikeStatus = posts.map((post) => ({
       ...post,
       user: {
-        userId: post.user.id, // ユーザーIDを userId としてセット
-        username: post.user.username, // 最新の username を利用
+        userId: post.user.id,
+        username: post.user.username,
+        image: post.user.image || "/uploads/default-profile.png", // デフォルト画像を設定
       },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,
@@ -252,7 +254,7 @@ const getFavoritePosts = async (req, res) => {
         },
       },
       include: {
-        user: { select: { id: true, username: true } },
+        user: { select: { id: true, username: true, image: true } },
         likes: { select: { userId: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -263,6 +265,7 @@ const getFavoritePosts = async (req, res) => {
       user: {
         userId: post.user.id,
         username: post.user.username,
+        image: post.user.image || "/uploads/default-profile.png", // デフォルト画像を設定
       },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,

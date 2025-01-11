@@ -37,7 +37,22 @@ app.use("/api/posts", postRoutes);
 app.use("/api/users", userRouter);
 
 // アップロードされたファイルを静的に提供
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // 静的ファイルの提供
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+console.log("Static file path:", path.join(__dirname, "uploads"));
+
+// デバッグ用ルートを追加
+app.get("/uploads-debug", (req, res) => {
+  const fs = require("fs");
+  const directoryPath = path.join(__dirname, "uploads");
+
+  fs.readdir(directoryPath, (err, files) => {
+    if (err) {
+      return res.status(500).send("Error reading uploads directory");
+    }
+    res.json(files);
+  });
+});
 
 // サーバーを起動
 app.listen(PORT, () => console.log(`server is running on Port ${PORT}`));

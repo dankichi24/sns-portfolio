@@ -25,10 +25,20 @@ const PostItem: React.FC<PostItemProps> = ({
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
       <div className="flex justify-between items-center mb-4">
-        {/* 名前のフォントサイズを少し大きく設定 */}
-        <span className="text-xl font-semibold text-blue-600">
-          {post.user.username}
-        </span>
+        {/* 投稿者名とプロフィール画像 */}
+        <div className="flex items-center">
+          <img
+            src={`http://localhost:5000${
+              post.user.image || "/uploads/default-profile.png"
+            }`}
+            alt="User profile"
+            className="w-8 h-8 rounded-full mr-2"
+          />
+
+          <span className="text-xl font-semibold text-blue-600">
+            {post.user.username}
+          </span>
+        </div>
         <div className="flex items-center">
           {post.user.userId === userId && (
             <>
@@ -58,7 +68,7 @@ const PostItem: React.FC<PostItemProps> = ({
           </span>
         </div>
       </div>
-      {/* 本文のスタイルを元に戻す */}
+      {/* 本文 */}
       <div className="text-gray-700 mb-4 leading-relaxed">{post.content}</div>
       {post.image && (
         <img

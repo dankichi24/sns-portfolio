@@ -35,6 +35,7 @@ const registerUser = async (req, res) => {
         username,
         email,
         password: hashedPassword,
+        image: "/uploads/default-profile.png", // デフォルト画像を設定
       },
     });
 
@@ -51,6 +52,7 @@ const registerUser = async (req, res) => {
         userId: user.id, // userId を返す
         username: user.username,
         email: user.email,
+        image: user.image, // プロフィール画像を追加
       },
     });
   } catch (error) {
@@ -100,6 +102,7 @@ const loginUser = async (req, res) => {
         userId: user.id,
         username: user.username,
         email: user.email,
+        image: user.image, // プロフィール画像を追加
       },
     });
   } catch (error) {
@@ -126,6 +129,7 @@ const getMe = async (req, res) => {
       userId: user.id, // userIdとして返す
       username: user.username,
       email: user.email,
+      image: user.image, // プロフィール画像を追加
     });
   } catch (error) {
     console.error("Error in getMe:", error); // サーバーエラーがあるか確認
