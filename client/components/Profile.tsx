@@ -10,6 +10,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUsername, setEditedUsername] = useState(username || "");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const saveUsername = async () => {
     try {
@@ -34,9 +35,8 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       if (!response.ok) throw new Error("ユーザー名の更新に失敗しました。");
 
       const data = await response.json();
-      login(data.user); // 状態を直接更新
-      alert("ユーザー名が更新されました！");
-      window.location.reload(); // ページを強制リロード
+      login(data.user);
+      window.location.reload();
     } catch (error) {
       console.error(error);
       alert("エラーが発生しました。");
@@ -48,6 +48,8 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       alert("画像を選択してください。");
       return;
     }
+
+    setIsUploading(true);
 
     const formData = new FormData();
     formData.append("profileImage", selectedImage);
@@ -67,19 +69,23 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       if (!response.ok) throw new Error("画像アップロードに失敗しました。");
 
       const data = await response.json();
-      login(data.user); // 状態を直接更新
-      alert("プロフィール画像が更新されました！");
-      window.location.reload(); // ページを強制リロード
+      login(data.user);
+      window.location.reload();
     } catch (error) {
       console.error("画像アップロードエラー:", error);
       alert("画像アップロード中にエラーが発生しました。");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
-    <div className="text-center">
-      <h1 className="text-2xl font-bold text-indigo-900 mb-4">プロフィール</h1>
+    <div className="text-center max-w-lg mx-auto">
+      <h1 className="text-2xl font-bold text-indigo-900 mb-6 text-center">
+        プロフィール
+      </h1>
       <div className="flex flex-col items-center">
+        {/* 画像編集部分 */}
         <img
           src={
             user?.image
@@ -87,50 +93,58 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
               : `http://localhost:5000/uploads/default-profile.png`
           }
           alt="プロフィール画像"
-          className="w-40 h-40 rounded-full object-cover"
+          className="w-40 h-40 rounded-full object-cover mb-4"
         />
         <input
           type="file"
           accept="image/*"
           onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
-          className="mt-4"
+          className="mt-2 text-sm"
         />
         <button
           onClick={handleImageUpload}
-          className="bg-indigo-500 text-white px-4 py-2 rounded mt-4"
+          className="bg-indigo-600 text-white px-4 py-1 rounded mt-4 text-sm font-medium"
+          disabled={isUploading}
         >
-          画像をアップロード
+          {isUploading ? "アップロード中..." : "画像をアップロード"}
         </button>
-        <div className="text-lg font-semibold text-gray-700 mt-4">
+
+        {/* 名前部分 */}
+        <div className="text-lg font-semibold text-black mt-8">
           {isEditing ? (
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col items-center space-y-3">
               <input
                 type="text"
                 value={editedUsername}
                 onChange={(e) => setEditedUsername(e.target.value)}
-                className="border rounded-md px-2 py-1 text-center w-40"
+                className="border rounded-md px-4 py-2 w-48 text-center text-lg font-semibold"
+                placeholder="新しいユーザー名を入力"
               />
-              <button
-                onClick={saveUsername}
-                className="bg-indigo-500 text-white px-2 py-1 rounded-md"
-              >
-                保存
-              </button>
-              <button
-                onClick={() => setIsEditing(false)}
-                className="text-gray-500 underline"
-              >
-                キャンセル
-              </button>
+              <div className="flex space-x-3">
+                <button
+                  onClick={saveUsername}
+                  className="bg-indigo-500 text-white px-5 py-2 rounded-md text-base font-semibold"
+                >
+                  保存
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="text-gray-500 underline text-base font-semibold"
+                >
+                  キャンセル
+                </button>
+              </div>
             </div>
           ) : (
-            <div className="flex items-center space-x-2">
-              <span>{editedUsername}</span>
+            <div className="flex flex-col items-center">
+              <span className="text-xl font-bold text-black mb-2">
+                {editedUsername}
+              </span>
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-indigo-500 underline"
+                className="text-indigo-600 underline text-base font-medium"
               >
-                編集
+                名前を編集
               </button>
             </div>
           )}
