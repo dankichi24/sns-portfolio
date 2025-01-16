@@ -55,7 +55,7 @@ const Navbar = () => {
                     user.image || "/uploads/default-profile.png"
                   }`}
                   alt="プロフィール画像"
-                  className="w-8 h-8 rounded-full border-2 border-white"
+                  className="w-8 h-8 rounded-full border-2 border-white bg-white"
                 />
                 <span className="text-sm font-semibold">
                   {user.username}さん
