@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  username     String  @unique
-  email        String  @unique
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
   password     String
   image        String?
   likes        Like[]
   posts        Post[]
+  devices      Device[] // UserとDeviceのリレーション
 }
 
 model Post {
@@ -36,4 +37,13 @@ model Like {
   user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, postId])
+}
+
+model Device {
+  id        Int      @id @default(autoincrement()) // デバイスID
+  name      String                                 // デバイス名
+  image     String                                 // デバイス画像のパス
+  userId    Int                                    // Userモデルと紐付け
+  user      User     @relation(fields: [userId], references: [id]) // リレーション
+  createdAt DateTime @default(now())               // 作成日時
 }

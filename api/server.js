@@ -2,14 +2,23 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const path = require("path"); // pathモジュールをインポート
+const fs = require("fs"); // fsモジュールをインポート
 const authRoutes = require("./routers/auth");
 const postRoutes = require("./routers/posts");
 const userRouter = require("./routers/user"); // ユーザールーターをインポート
+const devicesRouter = require("./routers/devices"); // デバイスルーターをインポート
 
 const PORT = 5000;
 
 // .env ファイルを読み込む
 require("dotenv").config();
+
+// アップロード先ディレクトリを確認・作成
+const uploadDir = path.join(__dirname, "uploads/img");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log(`Created directory: ${uploadDir}`);
+}
 
 // CORS の設定を追加
 app.use(
@@ -36,6 +45,9 @@ app.use("/api/posts", postRoutes);
 // ユーザールートを追加
 app.use("/api/users", userRouter);
 
+// デバイスルートを追加
+app.use("/api/devices", devicesRouter); // ★ ここでデバイスルーターを設定
+
 // アップロードされたファイルを静的に提供
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -43,7 +55,6 @@ console.log("Static file path:", path.join(__dirname, "uploads"));
 
 // デバッグ用ルートを追加
 app.get("/uploads-debug", (req, res) => {
-  const fs = require("fs");
   const directoryPath = path.join(__dirname, "uploads");
 
   fs.readdir(directoryPath, (err, files) => {
