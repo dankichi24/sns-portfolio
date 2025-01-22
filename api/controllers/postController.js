@@ -247,28 +247,30 @@ const getFavoritePosts = async (req, res) => {
   const userId = req.user.userId;
 
   try {
-    const favoritePosts = await prisma.post.findMany({
+    const favoritePosts = await prisma.like.findMany({
       where: {
-        likes: {
-          some: { userId: userId },
+        userId: userId, // ログイン中のユーザーが「いいね」した投稿を取得
+      },
+      orderBy: { createdAt: "desc" }, // お気に入りした順にソート
+      include: {
+        post: {
+          include: {
+            user: { select: { id: true, username: true, image: true } }, // 投稿ユーザー情報
+            likes: { select: { userId: true } }, // いいね情報
+          },
         },
       },
-      include: {
-        user: { select: { id: true, username: true, image: true } },
-        likes: { select: { userId: true } },
-      },
-      orderBy: { createdAt: "desc" },
     });
 
-    const postsWithLikeStatus = favoritePosts.map((post) => ({
-      ...post,
+    const postsWithLikeStatus = favoritePosts.map((favorite) => ({
+      ...favorite.post,
       user: {
-        userId: post.user.id,
-        username: post.user.username,
-        image: post.user.image || "/uploads/default-profile.png", // デフォルト画像を設定
+        userId: favorite.post.user.id,
+        username: favorite.post.user.username,
+        image: favorite.post.user.image || "/uploads/default-profile.png", // デフォルト画像を設定
       },
-      liked: post.likes.some((like) => like.userId === userId),
-      likeCount: post.likes.length,
+      liked: true, // この投稿はお気に入り済み
+      likeCount: favorite.post.likes.length,
     }));
 
     res.status(200).json(postsWithLikeStatus);
@@ -277,7 +279,6 @@ const getFavoritePosts = async (req, res) => {
     res.status(500).json({ error: "お気に入り投稿の取得に失敗しました。" });
   }
 };
-
 module.exports = {
   createPost,
   getPosts,
