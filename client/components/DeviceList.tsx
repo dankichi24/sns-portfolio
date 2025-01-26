@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../lib/authContext"; // 認証コンテキストをインポート
+import { useAuth } from "../lib/authContext";
 
 interface Device {
   id: number;
   name: string;
   image: string;
+  comment?: string; // コメントを追加
 }
 
 const DeviceList: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [newDeviceName, setNewDeviceName] = useState("");
   const [newDeviceImage, setNewDeviceImage] = useState<File | null>(null);
-  const { user } = useAuth(); // 現在ログイン中のユーザーを取得
+  const [newDeviceComment, setNewDeviceComment] = useState(""); // コメント状態を追加
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchDevices = async () => {
-      if (!user) return; // ユーザーがログインしていない場合は何もしない
+      if (!user) return;
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/devices?userId=${user.userId}` // 動的にuserIdを設定
+          `http://localhost:5000/api/devices?userId=${user.userId}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -36,8 +38,8 @@ const DeviceList: React.FC = () => {
   }, [user]);
 
   const addDevice = async () => {
-    if (!newDeviceName || !newDeviceImage) {
-      alert("デバイス名と画像を追加してください。");
+    if (!newDeviceName || !newDeviceImage || !newDeviceComment) {
+      alert("デバイス名、画像、コメントを入力してください。");
       return;
     }
 
@@ -49,7 +51,8 @@ const DeviceList: React.FC = () => {
     const formData = new FormData();
     formData.append("name", newDeviceName);
     formData.append("image", newDeviceImage);
-    formData.append("userId", String(user.userId)); // ログイン中のユーザーIDを送信
+    formData.append("comment", newDeviceComment); // コメントを追加
+    formData.append("userId", String(user.userId));
 
     try {
       const response = await fetch("http://localhost:5000/api/devices/add", {
@@ -62,12 +65,41 @@ const DeviceList: React.FC = () => {
         setDevices((prevDevices) => [...prevDevices, device]);
         setNewDeviceName("");
         setNewDeviceImage(null);
+        setNewDeviceComment(""); // コメントをリセット
       } else {
         const errorData = await response.json();
         alert(errorData.message || "デバイスの登録に失敗しました。");
       }
     } catch (error) {
       console.error(error);
+      alert("エラーが発生しました。");
+    }
+  };
+
+  const deleteDevice = async (deviceId: number) => {
+    if (!user) {
+      alert("ログインしていません。");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/devices/delete/${deviceId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        setDevices((prevDevices) =>
+          prevDevices.filter((device) => device.id !== deviceId)
+        );
+        alert("デバイスを削除しました。");
+      } else {
+        alert("デバイスの削除に失敗しました。");
+      }
+    } catch (error) {
+      console.error("デバイス削除中にエラーが発生しました:", error);
       alert("エラーが発生しました。");
     }
   };
@@ -118,6 +150,21 @@ const DeviceList: React.FC = () => {
                 className="block w-full text-sm mt-1"
               />
             </div>
+            <div>
+              <label
+                htmlFor="device-comment"
+                className="block text-sm font-medium text-gray-700"
+              >
+                コメント
+              </label>
+              <textarea
+                id="device-comment"
+                value={newDeviceComment}
+                onChange={(e) => setNewDeviceComment(e.target.value)}
+                placeholder="コメントを入力"
+                className="border rounded-md px-4 py-2 w-full mt-1 text-sm"
+              />
+            </div>
             <button
               type="submit"
               className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-blue-700 transition duration-300 w-32"
@@ -141,6 +188,17 @@ const DeviceList: React.FC = () => {
               <span className="text-xl font-bold text-center">
                 {device.name}
               </span>
+              {device.comment && (
+                <p className="text-gray-600 text-center mt-2">
+                  {device.comment}
+                </p>
+              )}
+              <button
+                onClick={() => deleteDevice(device.id)}
+                className="mt-2 bg-red-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-red-700 transition duration-300"
+              >
+                削除
+              </button>
             </div>
           ))}
         </div>

@@ -1,6 +1,10 @@
 const express = require("express");
 const multer = require("multer");
-const { addDevice, getDevices } = require("../controllers/deviceController"); // getDevicesを追加
+const {
+  addDevice,
+  getDevices,
+  deleteDevice,
+} = require("../controllers/deviceController"); // getDevicesを追加
 
 const router = express.Router();
 
@@ -20,5 +24,8 @@ router.post("/add", upload.single("image"), addDevice);
 
 // デバイスリスト取得エンドポイント
 router.get("/", getDevices); // ここに追加
+
+// デバイス削除エンドポイント
+router.delete("/delete/:deviceId", deleteDevice);
 
 module.exports = router;
