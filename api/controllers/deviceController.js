@@ -5,13 +5,14 @@ const prisma = new PrismaClient();
 exports.addDevice = async (req, res) => {
   console.log("Request body:", req.body); // デバッグ用ログ
 
-  const { name, userId, comment } = req.body; // コメントも受け取る
+  const { name, userId, comment } = req.body;
   const imagePath = req.file ? `/uploads/img/${req.file.filename}` : null;
 
-  if (!name || !imagePath || !userId || !comment) {
+  // バリデーション: コメントは必須ではないので除外
+  if (!name || !imagePath || !userId) {
     return res
       .status(400)
-      .json({ message: "名前、画像、コメント、ユーザーIDが必要です。" });
+      .json({ message: "名前、画像、ユーザーIDが必要です。" });
   }
 
   try {
@@ -19,7 +20,7 @@ exports.addDevice = async (req, res) => {
       data: {
         name,
         image: imagePath,
-        comment, // コメントを保存
+        comment: comment || null, // コメントが未入力ならnullを代入
         user: {
           connect: { id: parseInt(userId) },
         },

@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../lib/authContext";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+// SweetAlert2の設定
+const MySwal = withReactContent(Swal);
 
 interface Device {
   id: number;
@@ -13,6 +18,7 @@ const DeviceList: React.FC = () => {
   const [newDeviceName, setNewDeviceName] = useState("");
   const [newDeviceImage, setNewDeviceImage] = useState<File | null>(null);
   const [newDeviceComment, setNewDeviceComment] = useState(""); // コメント状態を追加
+  const fileInputRef = useRef<HTMLInputElement>(null); // ファイル入力の ref を定義
   const { user } = useAuth();
 
   useEffect(() => {
@@ -38,8 +44,8 @@ const DeviceList: React.FC = () => {
   }, [user]);
 
   const addDevice = async () => {
-    if (!newDeviceName || !newDeviceImage || !newDeviceComment) {
-      alert("デバイス名、画像、コメントを入力してください。");
+    if (!newDeviceName || !newDeviceImage) {
+      alert("デバイス名と画像を入力してください。");
       return;
     }
 
@@ -51,7 +57,7 @@ const DeviceList: React.FC = () => {
     const formData = new FormData();
     formData.append("name", newDeviceName);
     formData.append("image", newDeviceImage);
-    formData.append("comment", newDeviceComment); // コメントを追加
+    formData.append("comment", newDeviceComment || ""); // 空の場合は空文字列を送信
     formData.append("userId", String(user.userId));
 
     try {
@@ -66,6 +72,11 @@ const DeviceList: React.FC = () => {
         setNewDeviceName("");
         setNewDeviceImage(null);
         setNewDeviceComment(""); // コメントをリセット
+
+        // ファイル入力をリセット
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
       } else {
         const errorData = await response.json();
         alert(errorData.message || "デバイスの登録に失敗しました。");
@@ -74,6 +85,23 @@ const DeviceList: React.FC = () => {
       console.error(error);
       alert("エラーが発生しました。");
     }
+  };
+
+  const confirmDeleteDevice = (deviceId: number) => {
+    MySwal.fire({
+      title: "削除してもよろしいですか？",
+      text: "この操作は元に戻せません。",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "削除",
+      cancelButtonText: "キャンセル",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteDevice(deviceId);
+      }
+    });
   };
 
   const deleteDevice = async (deviceId: number) => {
@@ -94,7 +122,8 @@ const DeviceList: React.FC = () => {
         setDevices((prevDevices) =>
           prevDevices.filter((device) => device.id !== deviceId)
         );
-        alert("デバイスを削除しました。");
+        // 削除成功時のアラートを削除またはコメントアウト
+        // alert("デバイスを削除しました。");
       } else {
         alert("デバイスの削除に失敗しました。");
       }
@@ -137,21 +166,6 @@ const DeviceList: React.FC = () => {
             </div>
             <div>
               <label
-                htmlFor="device-image"
-                className="block text-sm font-medium text-gray-700"
-              >
-                デバイス画像
-              </label>
-              <input
-                id="device-image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setNewDeviceImage(e.target.files?.[0] || null)}
-                className="block w-full text-sm mt-1"
-              />
-            </div>
-            <div>
-              <label
                 htmlFor="device-comment"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -163,6 +177,22 @@ const DeviceList: React.FC = () => {
                 onChange={(e) => setNewDeviceComment(e.target.value)}
                 placeholder="コメントを入力"
                 className="border rounded-md px-4 py-2 w-full mt-1 text-sm"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="device-image"
+                className="block text-sm font-medium text-gray-700"
+              >
+                デバイス画像
+              </label>
+              <input
+                id="device-image"
+                type="file"
+                accept="image/*"
+                ref={fileInputRef} // ref を設定
+                onChange={(e) => setNewDeviceImage(e.target.files?.[0] || null)}
+                className="block w-full text-sm mt-1"
               />
             </div>
             <button
@@ -194,8 +224,8 @@ const DeviceList: React.FC = () => {
                 </p>
               )}
               <button
-                onClick={() => deleteDevice(device.id)}
-                className="mt-2 bg-red-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-red-700 transition duration-300"
+                onClick={() => confirmDeleteDevice(device.id)}
+                className="mt-2 bg-red-600 text-white px-2 py-1 text-xs font-medium rounded hover:bg-red-700 transition duration-300"
               >
                 削除
               </button>
