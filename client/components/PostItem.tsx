@@ -35,9 +35,12 @@ const PostItem: React.FC<PostItemProps> = ({
             className="w-8 h-8 rounded-full mr-2"
           />
 
-          <span className="text-xl font-semibold text-blue-600">
+          <Link
+            href={`/devices/${post.user.userId}`}
+            className="text-xl font-semibold text-blue-600 hover:underline"
+          >
             {post.user.username}
-          </span>
+          </Link>
         </div>
         <div className="flex items-center">
           {post.user.userId === userId && (

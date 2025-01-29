@@ -4,6 +4,7 @@ const authenticateToken = require("../middleware/authMiddleware"); // ミドル�
 const {
   updateUsername,
   uploadProfileImage,
+  getUserById, // ユーザー取得用の関数をインポート
 } = require("../controllers/userController");
 const multer = require("multer");
 const path = require("path");
@@ -28,6 +29,9 @@ router.get("/profile", authenticateToken, (req, res) => {
     user: req.user, // JWTからデコードされたユーザー情報を返す
   });
 });
+
+// **追加：特定のユーザーの情報を取得するAPI**
+router.get("/:userId", getUserById); // ← ここを追加！
 
 // ユーザー名を更新するエンドポイント
 router.put("/update-username", authenticateToken, updateUsername); // ミドルウェアで認証を追加

@@ -13,3 +13,11 @@ export interface Post {
   liked: boolean;
   likeCount: number;
 }
+
+export interface Device {
+  id: number;
+  name: string;
+  image: string;
+  comment?: string;
+  userId: number;
+}

@@ -75,3 +75,34 @@ exports.updateUsername = async (req, res) => {
       .json({ error: "ユーザー名の更新中にエラーが発生しました。" });
   }
 };
+
+// ユーザー情報取得処理
+exports.getUserById = async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+
+  if (!userId) {
+    return res.status(400).json({ error: "ユーザーIDが必要です。" });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        image: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "ユーザーが見つかりません。" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("ユーザー情報取得エラー:", error);
+    return res
+      .status(500)
+      .json({ error: "ユーザー情報取得中にエラーが発生しました。" });
+  }
+};

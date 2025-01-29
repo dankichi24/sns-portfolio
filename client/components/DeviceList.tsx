@@ -122,8 +122,6 @@ const DeviceList: React.FC = () => {
         setDevices((prevDevices) =>
           prevDevices.filter((device) => device.id !== deviceId)
         );
-        // 削除成功時のアラートを削除またはコメントアウト
-        // alert("デバイスを削除しました。");
       } else {
         alert("デバイスの削除に失敗しました。");
       }
@@ -204,7 +202,7 @@ const DeviceList: React.FC = () => {
           </form>
         </div>
 
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl justify-end">
           {devices.map((device) => (
             <div
               key={device.id}
