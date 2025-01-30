@@ -36,6 +36,7 @@ const Navbar = () => {
   }
 
   const isMypage = router.pathname === "/mypage";
+  const isUserDevicesPage = router.pathname.startsWith("/devices/");
 
   return (
     <header className="w-full bg-indigo-900 text-white py-4 sticky top-0 z-50">
@@ -61,11 +62,12 @@ const Navbar = () => {
                   {user.username}さん
                 </span>
               </span>
+              {/* ユーザーデバイスページでは "Home"、それ以外は "マイページ" を表示 */}
               <Link
-                href={isMypage ? "/home" : "/mypage"}
+                href={isMypage || isUserDevicesPage ? "/home" : "/mypage"}
                 className="bg-white text-indigo-900 px-4 py-2 rounded font-bold hover:bg-gray-200 transition duration-300"
               >
-                {isMypage ? "HOME" : "マイページ"}
+                {isMypage || isUserDevicesPage ? "HOME" : "マイページ"}
               </Link>
               <button
                 onClick={logout}
