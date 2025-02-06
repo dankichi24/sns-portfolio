@@ -125,12 +125,7 @@ const SignIn = () => {
           </button>
         </form>
 
-        <div className="mt-6 flex justify-between">
-          <Link href="/reset-password">
-            <button className="py-2 px-4 font-semibold text-gray-700 rounded hover:bg-gray-200 transition duration-300">
-              パスワードリセット
-            </button>
-          </Link>
+        <div className="mt-6 flex justify-center">
           <Link href="/auth/signup">
             <button className="py-2 px-4 font-semibold text-gray-700 rounded hover:bg-gray-200 transition duration-300">
               新規登録はこちら

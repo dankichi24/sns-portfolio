@@ -13,15 +13,22 @@ const Navbar = () => {
     // ユーザー情報が無い場合、再取得
     if (!user) {
       const fetchUser = async () => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return; // トークンがない場合は何もしない
+
         try {
           const response = await fetch("http://localhost:5000/api/auth/me", {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+              Authorization: `Bearer ${token}`,
             },
           });
+
           if (response.ok) {
             const data = await response.json();
-            login(data.user); // 最新のユーザー情報を反映
+            login(data.user); // ユーザー情報をセット
+          } else {
+            console.error("認証エラー: ログアウトを実行");
+            logout(); // トークンが無効ならログアウト
           }
         } catch (error) {
           console.error("Error fetching user:", error);
