@@ -18,7 +18,6 @@ const registerUser = async (req, res) => {
   }
 
   try {
-    // すでに登録されたユーザーが存在するか確認
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res
@@ -29,13 +28,12 @@ const registerUser = async (req, res) => {
     // パスワードをハッシュ化
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ユーザーを作成
     const user = await prisma.user.create({
       data: {
         username,
         email,
         password: hashedPassword,
-        image: "/uploads/default-profile.png", // デフォルト画像を設定
+        image: "/uploads/default-profile.png", // デフォルト画像
       },
     });
 
@@ -44,19 +42,17 @@ const registerUser = async (req, res) => {
       expiresIn: "1d",
     });
 
-    // トークンとユーザー情報を返す
     return res.status(201).json({
       message: "ユーザー登録成功",
-      token: token, // トークンをフロントエンドに返す
+      token,
       user: {
-        userId: user.id, // userId を返す
+        userId: user.id,
         username: user.username,
         email: user.email,
-        image: user.image, // プロフィール画像を追加
+        image: user.image,
       },
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: "サーバーエラーが発生しました" });
   }
 };
@@ -65,7 +61,6 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  // 入力チェック
   if (!email || !password) {
     return res
       .status(400)
@@ -73,7 +68,6 @@ const loginUser = async (req, res) => {
   }
 
   try {
-    // メールアドレスに一致するユーザーを探す
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res
@@ -81,7 +75,6 @@ const loginUser = async (req, res) => {
         .json({ error: "メールアドレスまたはパスワードが正しくありません" });
     }
 
-    // パスワードの照合
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res
@@ -94,19 +87,17 @@ const loginUser = async (req, res) => {
       expiresIn: "1d",
     });
 
-    // トークンとユーザー情報を返す
     return res.json({
       message: "ログイン成功",
-      token: token,
+      token,
       user: {
         userId: user.id,
         username: user.username,
         email: user.email,
-        image: user.image, // プロフィール画像を追加
+        image: user.image,
       },
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: "サーバーエラーが発生しました" });
   }
 };
@@ -114,25 +105,21 @@ const loginUser = async (req, res) => {
 // 認証されたユーザーの情報を取得するコントローラ
 const getMe = async (req, res) => {
   try {
-    console.log("Authenticated user:", req.user); // デバッグ用ログ
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
     });
-    console.log("Fetched user:", user); // デバッグログを追加
 
     if (!user) {
       return res.status(404).json({ error: "ユーザーが見つかりません" });
     }
 
-    // ユーザー情報を返す
     return res.json({
-      userId: user.id, // userIdとして返す
+      userId: user.id,
       username: user.username,
       email: user.email,
-      image: user.image, // プロフィール画像を追加
+      image: user.image,
     });
   } catch (error) {
-    console.error("Error in getMe:", error); // サーバーエラーがあるか確認
     return res.status(500).json({ error: "サーバーエラーが発生しました" });
   }
 };

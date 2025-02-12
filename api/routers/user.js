@@ -1,47 +1,46 @@
 const express = require("express");
 const router = express.Router();
-const authenticateToken = require("../middleware/authMiddleware"); // ミドルウェアのインポート
+const authenticateToken = require("../middleware/authMiddleware");
 const {
   updateUsername,
   uploadProfileImage,
-  getUserById, // ユーザー取得用の関数をインポート
+  getUserById,
 } = require("../controllers/userController");
 const multer = require("multer");
 const path = require("path");
 
-// 画像アップロードの設定（統一）
+// 画像アップロードの設定
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../uploads")); // アップロード先を正確に設定
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../uploads"));
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, `image-${Date.now()}-${file.originalname}`);
   },
 });
 
-const upload = multer({ storage: storage }); // 一貫性を持たせる
+const upload = multer({ storage });
 
-// ユーザー情報取得のルート
+// ユーザー情報取得
 router.get("/profile", authenticateToken, (req, res) => {
-  console.log("req.user in /profile:", req.user); // デバッグ用ログ
   res.json({
     message: "認証成功",
-    user: req.user, // JWTからデコードされたユーザー情報を返す
+    user: req.user,
   });
 });
 
-// **追加：特定のユーザーの情報を取得するAPI**
-router.get("/:userId", getUserById); // ← ここを追加！
+// 特定のユーザー情報取得
+router.get("/:userId", getUserById);
 
-// ユーザー名を更新するエンドポイント
-router.put("/update-username", authenticateToken, updateUsername); // ミドルウェアで認証を追加
+// ユーザー名更新
+router.put("/update-username", authenticateToken, updateUsername);
 
-// プロフィール画像をアップロードするエンドポイント
+// プロフィール画像アップロード
 router.post(
   "/upload-profile-image",
   authenticateToken,
-  upload.single("profileImage"), // multerでファイルを処理
-  uploadProfileImage // コントローラーで処理
+  upload.single("profileImage"),
+  uploadProfileImage
 );
 
 module.exports = router;

@@ -4,7 +4,7 @@ const {
   addDevice,
   getDevices,
   deleteDevice,
-} = require("../controllers/deviceController"); // getDevicesを追加
+} = require("../controllers/deviceController");
 
 const router = express.Router();
 
@@ -19,13 +19,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// デバイス登録エンドポイント
+// デバイス登録
 router.post("/add", upload.single("image"), addDevice);
 
-// デバイスリスト取得エンドポイント
-router.get("/", getDevices); // ここに追加
+// デバイス一覧取得
+router.get("/", getDevices);
 
-// デバイス削除エンドポイント
+// デバイス削除
 router.delete("/delete/:deviceId", deleteDevice);
 
 module.exports = router;

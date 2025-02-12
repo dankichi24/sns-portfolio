@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { useAuth } from "../../lib/authContext"; // AuthContext から useAuth をインポート
+import { useAuth } from "../../lib/authContext";
 
 interface ApiErrorResponse {
   error: string;
@@ -20,6 +20,7 @@ interface ApiSuccessResponse {
     email: string;
   };
 }
+
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -28,47 +29,33 @@ const SignIn = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const router = useRouter();
-  const { login } = useAuth(); // AuthContext の login 関数を取得
+  const { login } = useAuth();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // デフォルトのフォーム送信を防ぐ
-
-    console.log("Submitting form..."); // フォームが送信されたことを確認
+    e.preventDefault();
 
     try {
-      // API にリクエストを送信
-      console.log("Sending API request..."); // APIリクエストの直前にログを追加
-
       const response = await apiClient.post<ApiSuccessResponse>(
         "/api/auth/login",
-        { email, password }
+        {
+          email,
+          password,
+        }
       );
-
-      console.log("API Response:", response.data); // APIのレスポンス全体を確認
-      // 他のログも含めて、全てのデータが正しいか確認
-      console.log("Token:", response.data.token);
-      console.log("User:", response.data.user);
 
       setSuccess(response.data.message);
       setError(null);
 
-      const token = response.data.token;
-      localStorage.setItem("authToken", token);
-
-      // AuthContext の login 関数に渡すデータをログで確認
-      console.log("User data in login:", response.data.user);
+      localStorage.setItem("authToken", response.data.token);
       login(response.data.user);
-
       router.push("/home");
     } catch (err) {
-      console.error("Login error:", err);
       if (axios.isAxiosError(err) && err.response) {
         const apiError = err.response.data as ApiErrorResponse;
-        console.log("API error response:", apiError);
         setError(apiError.error);
       } else {
         setError("ログインに失敗しました。再度お試しください。");
@@ -92,7 +79,7 @@ const SignIn = () => {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)} // 入力されたメールアドレスを state にセット
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="メールアドレス"
               className="w-full px-4 py-3 border rounded"
               required
@@ -104,7 +91,7 @@ const SignIn = () => {
             <input
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)} // 入力されたパスワードを state にセット
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="パスワード"
               className="w-full px-4 py-3 border rounded"
               required

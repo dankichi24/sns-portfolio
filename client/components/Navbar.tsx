@@ -7,14 +7,12 @@ const Navbar = () => {
   const { user, logout, login, isLoading } = useAuth();
   const router = useRouter();
 
-  console.log("User in Navbar:", user);
-
   useEffect(() => {
     // ユーザー情報が無い場合、再取得
     if (!user) {
       const fetchUser = async () => {
         const token = localStorage.getItem("authToken");
-        if (!token) return; // トークンがない場合は何もしない
+        if (!token) return;
 
         try {
           const response = await fetch("http://localhost:5000/api/auth/me", {
@@ -25,10 +23,9 @@ const Navbar = () => {
 
           if (response.ok) {
             const data = await response.json();
-            login(data.user); // ユーザー情報をセット
+            login(data.user);
           } else {
-            console.error("認証エラー: ログアウトを実行");
-            logout(); // トークンが無効ならログアウト
+            logout();
           }
         } catch (error) {
           console.error("Error fetching user:", error);
@@ -39,7 +36,7 @@ const Navbar = () => {
   }, [user, login]);
 
   if (isLoading) {
-    return null; // ロード中は何も描画しない
+    return null;
   }
 
   const isMypage = router.pathname === "/mypage";
@@ -69,7 +66,6 @@ const Navbar = () => {
                   {user.username}さん
                 </span>
               </span>
-              {/* ユーザーデバイスページでは "Home"、それ以外は "マイページ" を表示 */}
               <Link
                 href={isMypage || isUserDevicesPage ? "/home" : "/mypage"}
                 className="bg-white text-indigo-900 px-4 py-2 rounded font-bold hover:bg-gray-200 transition duration-300"

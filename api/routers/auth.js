@@ -14,6 +14,6 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 
 // 認証されたユーザー情報取得
-router.get("/me", authenticateToken, getMe); // 認証が必要
+router.get("/me", authenticateToken, getMe);
 
 module.exports = router;

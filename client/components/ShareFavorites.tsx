@@ -15,7 +15,7 @@ interface ShareFavoritesProps {
 const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
   const [favoritePosts, setFavoritePosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
-  const [animateLike, setAnimateLike] = useState<number | null>(null); // アニメーション管理
+  const [animateLike, setAnimateLike] = useState<number | null>(null);
 
   useEffect(() => {
     if (!active) return;
@@ -25,8 +25,6 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
       try {
         const response = await apiClient.get("/api/posts/favorites");
         setFavoritePosts(response.data);
-      } catch (error) {
-        console.error("Error fetching favorite posts:", error);
       } finally {
         setLoading(false);
       }
@@ -38,28 +36,24 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
   // 「いいね」を解除して投稿を削除
   const handleUnlike = async (postId: number) => {
     try {
-      // アニメーションのためlikedを一時的にfalseにする
       setFavoritePosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId ? { ...post, liked: false } : post
         )
       );
 
-      setAnimateLike(postId); // アニメーションを開始
+      setAnimateLike(postId);
 
-      // API呼び出し（いいね解除）
       await apiClient.post("/api/posts/like", { postId });
 
-      // アニメーション後に投稿を削除
       setTimeout(() => {
         setFavoritePosts((prevPosts) =>
           prevPosts.filter((post) => post.id !== postId)
         );
-        setAnimateLike(null); // アニメーション状態をリセット
-      }, 300); // アニメーション時間に合わせる
-    } catch (error) {
-      console.error("Error unliking the post:", error);
-      setAnimateLike(null); // エラーが発生した場合はアニメーションをリセット
+        setAnimateLike(null);
+      }, 300);
+    } catch {
+      setAnimateLike(null);
     }
   };
 
@@ -89,8 +83,7 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
       setFavoritePosts((prevPosts) =>
         prevPosts.filter((post) => post.id !== postId)
       );
-    } catch (error) {
-      console.error("Error deleting post:", error);
+    } catch {
       MySwal.fire("エラー", "削除中に問題が発生しました。", "error");
     }
   };
@@ -114,11 +107,11 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
               key={post.id}
               post={post}
               userId={userId}
-              toggleLike={() => handleUnlike(post.id)} // いいね解除処理
-              confirmDeletePost={() => confirmDeletePost(post.id)} // 削除確認アラート
+              toggleLike={() => handleUnlike(post.id)}
+              confirmDeletePost={() => confirmDeletePost(post.id)}
               openModal={() => {}}
               animateLike={animateLike}
-              activeTab="favorites" // 追加
+              activeTab="favorites"
             />
           ))}
         </div>

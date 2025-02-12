@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../lib/authContext";
-import DeviceList from "./DeviceList"; // DeviceList をインポート
+import DeviceList from "./DeviceList";
 
 interface ProfileProps {
   username: string;
@@ -39,7 +39,6 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       login(data.user);
       window.location.reload();
     } catch (error) {
-      console.error(error);
       alert("エラーが発生しました。");
     }
   };
@@ -73,7 +72,6 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       login(data.user);
       window.location.reload();
     } catch (error) {
-      console.error("画像アップロードエラー:", error);
       alert("画像アップロード中にエラーが発生しました。");
     } finally {
       setIsUploading(false);
@@ -82,8 +80,6 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
 
   return (
     <div className="text-center max-w-4xl mx-auto">
-      {" "}
-      {/* max-w-lg を max-w-4xl に変更 */}
       <h1 className="text-2xl font-bold text-indigo-900 mb-6 text-center">
         プロフィール
       </h1>
@@ -157,9 +153,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
         <hr className="border-t border-gray-300 w-full my-8" />
 
         {/* 使用デバイス一覧 */}
-        <div>
-          <DeviceList />
-        </div>
+        <DeviceList />
       </div>
     </div>
   );

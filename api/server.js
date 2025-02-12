@@ -1,12 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const path = require("path"); // pathモジュールをインポート
-const fs = require("fs"); // fsモジュールをインポート
+const path = require("path");
+const fs = require("fs");
 const authRoutes = require("./routers/auth");
 const postRoutes = require("./routers/posts");
-const userRouter = require("./routers/user"); // ユーザールーターをインポート
-const devicesRouter = require("./routers/devices"); // デバイスルーターをインポート
+const userRouter = require("./routers/user");
+const devicesRouter = require("./routers/devices");
 
 const PORT = 5000;
 
@@ -17,21 +17,20 @@ require("dotenv").config();
 const uploadDir = path.join(__dirname, "uploads/img");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
-  console.log(`Created directory: ${uploadDir}`);
 }
 
-// CORS の設定を追加
+// CORS の設定
 app.use(
   cors({
-    origin: "http://localhost:3000", // フロントエンドの URL
-    credentials: true, // クッキーなどの認証情報を共有する場合は true に設定
+    origin: "http://localhost:3000",
+    credentials: true,
   })
 );
 
 // JSON形式のリクエストボディを解析
 app.use(express.json());
 
-// トップレベルのルートに対応するレスポンスを追加
+// トップレベルのルート
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
 });
@@ -39,21 +38,19 @@ app.get("/", (req, res) => {
 // 認証ルート
 app.use("/api/auth", authRoutes);
 
-// 投稿ルートを追加
+// 投稿ルート
 app.use("/api/posts", postRoutes);
 
-// ユーザールートを追加
+// ユーザールート
 app.use("/api/users", userRouter);
 
-// デバイスルートを追加
-app.use("/api/devices", devicesRouter); // ★ ここでデバイスルーターを設定
+// デバイスルート
+app.use("/api/devices", devicesRouter);
 
 // アップロードされたファイルを静的に提供
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-console.log("Static file path:", path.join(__dirname, "uploads"));
-
-// デバッグ用ルートを追加
+// デバッグ用ルート（アップロードされたファイル一覧を取得）
 app.get("/uploads-debug", (req, res) => {
   const directoryPath = path.join(__dirname, "uploads");
 
@@ -66,9 +63,9 @@ app.get("/uploads-debug", (req, res) => {
 });
 
 // サーバーを起動
-app.listen(PORT, () => console.log(`server is running on Port ${PORT}`));
+app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
 
-// すべてのルートにマッチしなかった場合の404エラーハンドリング
-app.use((req, res, next) => {
+// 404エラーハンドリング
+app.use((req, res) => {
   res.status(404).json({ error: "ページが見つかりません" });
 });

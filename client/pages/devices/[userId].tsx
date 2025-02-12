@@ -16,29 +16,20 @@ const UserDevices = () => {
     const fetchUserDevices = async () => {
       setLoading(true);
       try {
-        // ユーザー情報を取得
         const userResponse = await fetch(
           `http://localhost:5000/api/users/${userId}`
         );
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUsername(userData.username || "ユーザー");
-        } else {
-          console.error("ユーザー情報の取得に失敗しました。");
         }
 
-        // ユーザーのデバイス一覧を取得
         const deviceResponse = await fetch(
           `http://localhost:5000/api/devices?userId=${userId}`
         );
         if (deviceResponse.ok) {
-          const data = await deviceResponse.json();
-          setDevices(data);
-        } else {
-          console.error("ユーザーのデバイス一覧を取得できませんでした。");
+          setDevices(await deviceResponse.json());
         }
-      } catch (error) {
-        console.error("エラーが発生しました:", error);
       } finally {
         setLoading(false);
       }
@@ -53,7 +44,6 @@ const UserDevices = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4">
-      {/* Navbar とタイトルの間隔を調整 */}
       <h1 className="text-2xl font-bold text-indigo-900 text-center mt-10 mb-8">
         {username} さんの使用デバイス一覧
       </h1>

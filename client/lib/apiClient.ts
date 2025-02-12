@@ -15,9 +15,11 @@ apiClient.interceptors.request.use((config) => {
   }
 
   // キャッシュ無効化のヘッダーを追加
-  config.headers["Cache-Control"] = "no-cache";
-  config.headers["Pragma"] = "no-cache";
-  config.headers["Expires"] = "0";
+  Object.assign(config.headers, {
+    "Cache-Control": "no-cache",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
 
   return config;
 });

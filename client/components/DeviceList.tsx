@@ -3,22 +3,21 @@ import { useAuth } from "../lib/authContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-// SweetAlert2の設定
 const MySwal = withReactContent(Swal);
 
 interface Device {
   id: number;
   name: string;
   image: string;
-  comment?: string; // コメントを追加
+  comment?: string;
 }
 
 const DeviceList: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [newDeviceName, setNewDeviceName] = useState("");
   const [newDeviceImage, setNewDeviceImage] = useState<File | null>(null);
-  const [newDeviceComment, setNewDeviceComment] = useState(""); // コメント状態を追加
-  const fileInputRef = useRef<HTMLInputElement>(null); // ファイル入力の ref を定義
+  const [newDeviceComment, setNewDeviceComment] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -32,8 +31,6 @@ const DeviceList: React.FC = () => {
         if (response.ok) {
           const data = await response.json();
           setDevices(data);
-        } else {
-          console.error("デバイスリストの取得に失敗しました。");
         }
       } catch (error) {
         console.error("エラーが発生しました:", error);
@@ -57,7 +54,7 @@ const DeviceList: React.FC = () => {
     const formData = new FormData();
     formData.append("name", newDeviceName);
     formData.append("image", newDeviceImage);
-    formData.append("comment", newDeviceComment || ""); // 空の場合は空文字列を送信
+    formData.append("comment", newDeviceComment || "");
     formData.append("userId", String(user.userId));
 
     try {
@@ -71,9 +68,8 @@ const DeviceList: React.FC = () => {
         setDevices((prevDevices) => [...prevDevices, device]);
         setNewDeviceName("");
         setNewDeviceImage(null);
-        setNewDeviceComment(""); // コメントをリセット
+        setNewDeviceComment("");
 
-        // ファイル入力をリセット
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -188,7 +184,7 @@ const DeviceList: React.FC = () => {
                 id="device-image"
                 type="file"
                 accept="image/*"
-                ref={fileInputRef} // ref を設定
+                ref={fileInputRef}
                 onChange={(e) => setNewDeviceImage(e.target.files?.[0] || null)}
                 className="block w-full text-sm mt-1"
               />

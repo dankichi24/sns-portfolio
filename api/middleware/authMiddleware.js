@@ -16,15 +16,12 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ error: "トークンが必要です" });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
-      console.error("Invalid token:", err);
       return res.status(403).json({ error: "トークンが無効です" });
     }
 
-    // デコードされたユーザー情報を確認し、req.user に userId を設定
     req.user = { userId: user.userId, email: user.email };
-    console.log("Decoded User in middleware:", req.user); // デバッグ用ログ
     next();
   });
 };

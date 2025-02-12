@@ -5,9 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useAuth } from "../../lib/authContext"; // AuthContextからuseAuthをインポート
+import { useAuth } from "../../lib/authContext";
 
-// 型定義
 interface ApiErrorResponse {
   error: string;
 }
@@ -16,7 +15,7 @@ interface ApiSuccessResponse {
   message: string;
   token: string;
   user: {
-    userId: number; // サーバーから返されるuserId
+    userId: number;
     username: string;
     email: string;
   };
@@ -32,28 +31,22 @@ const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const { login } = useAuth(); // useAuth から login 関数を取得
+  const { login } = useAuth();
   const router = useRouter();
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () =>
     setShowConfirmPassword(!showConfirmPassword);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // フォーム送信を防ぐ
+    e.preventDefault();
 
-    // パスワード確認のチェック
     if (password !== confirmPassword) {
       setError("パスワードが一致しません");
       return;
     }
 
     try {
-      // API にリクエストを送信
       const response = await apiClient.post<ApiSuccessResponse>(
         "/api/auth/register",
         {
@@ -63,32 +56,15 @@ const SignUp = () => {
         }
       );
 
-      setSuccess(response.data.message); // 成功メッセージを設定
-      setError(null); // エラーメッセージをクリア
+      setSuccess(response.data.message);
+      setError(null);
 
-      // 登録成功時にトークンをlocalStorageに保存
-      const token = response.data.token;
-      localStorage.setItem("authToken", token); // トークンを保存
-
-      // ログイン情報をAuthContextに保存
-      const {
-        userId,
-        username: registeredUsername,
-        email: registeredEmail,
-      } = response.data.user;
-      login({
-        userId, // userIdをセット
-        username: registeredUsername,
-        email: registeredEmail,
-      });
-
-      // ホーム画面にリダイレクト
+      localStorage.setItem("authToken", response.data.token);
+      login(response.data.user);
       router.push("/home");
     } catch (err) {
-      console.error("Registration error:", err);
       if (axios.isAxiosError(err) && err.response) {
-        const apiError = err.response.data as ApiErrorResponse;
-        setError(apiError.error); // サーバーからのエラーメッセージを設定
+        setError((err.response.data as ApiErrorResponse).error);
       } else {
         setError("登録に失敗しました。再度お試しください。");
       }

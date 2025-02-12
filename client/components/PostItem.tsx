@@ -10,7 +10,7 @@ interface PostItemProps {
   confirmDeletePost: (postId: number) => void;
   openModal: (image: string) => void;
   animateLike: number | null;
-  activeTab: string; // 追加
+  activeTab: string;
 }
 
 const PostItem: React.FC<PostItemProps> = ({
@@ -20,7 +20,7 @@ const PostItem: React.FC<PostItemProps> = ({
   confirmDeletePost,
   openModal,
   animateLike,
-  activeTab = "home", // デフォルト値を設定
+  activeTab = "home",
 }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
@@ -71,8 +71,9 @@ const PostItem: React.FC<PostItemProps> = ({
           </span>
         </div>
       </div>
+
       {/* 本文 */}
-      <div className="text-gray-700 mb-4 leading-relaxed">{post.content}</div>
+      <div className="text-gray-700 mb-5 leading-relaxed">{post.content}</div>
       {post.image && (
         <img
           src={`http://localhost:5000${post.image}`}

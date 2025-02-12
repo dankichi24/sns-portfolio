@@ -15,7 +15,7 @@ interface ShareHistoryProps {
 const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
-  const [animateLike, setAnimateLike] = useState<number | null>(null); // アニメーション管理
+  const [animateLike, setAnimateLike] = useState<number | null>(null);
 
   // 投稿データを取得する関数
   const fetchMyPosts = async () => {
@@ -23,9 +23,6 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
     try {
       const response = await apiClient.get("/api/posts/my-posts");
       setMyPosts(response.data);
-      console.log("取得した投稿データ:", response.data);
-    } catch (error) {
-      console.error("Error fetching my posts:", error);
     } finally {
       setLoading(false);
     }
@@ -34,14 +31,14 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   // データ取得を行う useEffect
   useEffect(() => {
     if (active) {
-      fetchMyPosts(); // activeがtrueのときに投稿データを取得
+      fetchMyPosts();
     }
-  }, [active, userId]); // active または userId が変わったときに実行
+  }, [active, userId]);
 
   // いいねのトグル処理
   const toggleLike = async (postId: number) => {
     try {
-      setAnimateLike(postId); // アニメーションを開始
+      setAnimateLike(postId);
 
       const response = await apiClient.post("/api/posts/like", { postId });
       setMyPosts((prevPosts) =>
@@ -49,16 +46,16 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
           post.id === postId
             ? {
                 ...post,
-                liked: response.data.liked, // APIのレスポンスに従って更新
+                liked: response.data.liked,
                 likeCount: response.data.likeCount,
               }
             : post
         )
       );
 
-      setTimeout(() => setAnimateLike(null), 300); // アニメーション終了
-    } catch (error) {
-      console.error("Error toggling like:", error);
+      setTimeout(() => setAnimateLike(null), 300);
+    } catch {
+      setAnimateLike(null);
     }
   };
 
@@ -84,8 +81,8 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
     try {
       await apiClient.delete(`/api/posts/${postId}`);
       setMyPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
-    } catch (error) {
-      console.error("Error deleting post:", error);
+    } catch {
+      MySwal.fire("エラー", "削除中に問題が発生しました。", "error");
     }
   };
 
@@ -106,11 +103,11 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
               key={post.id}
               post={post}
               userId={userId}
-              confirmDeletePost={() => confirmDeletePost(post.id)} // 削除機能
-              toggleLike={() => toggleLike(post.id)} // いいねのトグル
+              confirmDeletePost={() => confirmDeletePost(post.id)}
+              toggleLike={() => toggleLike(post.id)}
               openModal={() => {}}
-              animateLike={animateLike} // アニメーション管理
-              activeTab="history" // 追加
+              animateLike={animateLike}
+              activeTab="history"
             />
           ))}
         </div>

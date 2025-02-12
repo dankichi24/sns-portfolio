@@ -6,7 +6,7 @@ export interface User {
   userId: number;
   username: string;
   email: string;
-  image?: string; // 新しいプロパティを追加
+  image?: string;
 }
 
 interface AuthContextType {
@@ -14,7 +14,7 @@ interface AuthContextType {
   login: (user: User) => void;
   logout: () => void;
   isLoading: boolean;
-  updateUser: (updatedData: Partial<User>) => void; // 追加
+  updateUser: (updatedData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,16 +29,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (token) {
       apiClient
-        .get("/api/auth/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        .get("/api/auth/me")
         .then((response) => {
           if (response.data.userId) {
             setUser({
               userId: response.data.userId,
               username: response.data.username,
               email: response.data.email,
-              image: response.data.image, // プロフィール画像のパスを追加
+              image: response.data.image,
             });
           }
         })
@@ -54,12 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updateUser = (updatedData: Partial<User>) => {
-    setUser((prev) => {
-      if (!prev) {
-        throw new Error("User is not defined");
-      }
-      return { ...prev, ...updatedData };
-    });
+    setUser((prev) => (prev ? { ...prev, ...updatedData } : null));
   };
 
   const logout = () => {
