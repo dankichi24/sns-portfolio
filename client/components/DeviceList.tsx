@@ -213,13 +213,14 @@ const DeviceList: React.FC = () => {
                 {device.name}
               </span>
               {device.comment && (
-                <p className="text-gray-600 text-center mt-2">
+                <p className="text-gray-600 text-center mt-2 max-h-16 overflow-hidden text-ellipsis whitespace-pre-line break-words">
                   {device.comment}
                 </p>
               )}
+              <div className="flex-grow" />
               <button
                 onClick={() => confirmDeleteDevice(device.id)}
-                className="mt-2 bg-red-600 text-white px-2 py-1 text-xs font-medium rounded hover:bg-red-700 transition duration-300"
+                className="mt-3 bg-red-600 text-white px-4 py-1 text-xs font-medium rounded hover:bg-red-700 transition duration-300"
               >
                 削除
               </button>

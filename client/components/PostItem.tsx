@@ -24,8 +24,8 @@ const PostItem: React.FC<PostItemProps> = ({
 }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
-      <div className="flex justify-between items-center mb-4">
-        {/* 投稿者名とプロフィール画像 */}
+      {/* 投稿者情報 */}
+      <div className="flex justify-between items-center">
         <div className="flex items-center">
           <img
             src={`http://localhost:5000${
@@ -34,7 +34,6 @@ const PostItem: React.FC<PostItemProps> = ({
             alt="User profile"
             className="w-8 h-8 rounded-full mr-2"
           />
-
           <Link
             href={`/devices/${post.user.userId}`}
             className="text-xl font-semibold text-blue-600 hover:underline"
@@ -72,13 +71,16 @@ const PostItem: React.FC<PostItemProps> = ({
         </div>
       </div>
 
-      {/* 本文 */}
-      <div className="text-gray-700 mb-5 leading-relaxed">{post.content}</div>
+      {/* 本文を名前の下に移動し、間隔を調整 + 改行を適用 */}
+      <div className="text-gray-700 mt-5 mb-4 leading-relaxed whitespace-pre-wrap pl-10">
+        {post.content}
+      </div>
+      {/* 画像の表示 */}
       {post.image && (
         <img
           src={`http://localhost:5000${post.image}`}
           alt="Post image"
-          className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer"
+          className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer mt-4"
           style={{ maxHeight: "300px", objectFit: "cover" }}
           onClick={() => openModal(`http://localhost:5000${post.image}`)}
         />
