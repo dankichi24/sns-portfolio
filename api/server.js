@@ -8,7 +8,8 @@ const postRoutes = require("./routers/posts");
 const userRouter = require("./routers/user");
 const devicesRouter = require("./routers/devices");
 
-const PORT = 5000;
+// ポート番号の設定（Vercel の自動割り当てに対応）
+const PORT = process.env.PORT || 5000;
 
 // .env ファイルを読み込む
 require("dotenv").config();
@@ -19,10 +20,10 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// CORS の設定
+// CORS の設定（デプロイ環境対応）
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   })
 );
@@ -62,10 +63,10 @@ app.get("/uploads-debug", (req, res) => {
   });
 });
 
-// サーバーを起動
-app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
-
 // 404エラーハンドリング
 app.use((req, res) => {
   res.status(404).json({ error: "ページが見つかりません" });
 });
+
+// サーバーを起動
+app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
