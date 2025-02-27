@@ -15,10 +15,19 @@ const PORT = process.env.PORT || 5000;
 require("dotenv").config();
 
 // アップロード先ディレクトリを確認・作成
-const uploadDir = path.join(__dirname, "uploads/img");
+let uploadDir = path.join(__dirname, "uploads/img");
+
+// Vercel 環境では `/tmp/uploads/img` を使用
+if (process.env.VERCEL) {
+  uploadDir = "/tmp/uploads/img";
+}
+
+// ディレクトリを作成（存在しない場合のみ）
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+console.log("Upload directory:", uploadDir);
 
 // CORS の設定（デプロイ環境対応）
 app.use(
@@ -48,14 +57,14 @@ app.use("/api/users", userRouter);
 // デバイスルート
 app.use("/api/devices", devicesRouter);
 
-// アップロードされたファイルを静的に提供
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// アップロードされたファイルを静的に提供（ローカル環境のみ）
+if (!process.env.VERCEL) {
+  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+}
 
 // デバッグ用ルート（アップロードされたファイル一覧を取得）
 app.get("/uploads-debug", (req, res) => {
-  const directoryPath = path.join(__dirname, "uploads");
-
-  fs.readdir(directoryPath, (err, files) => {
+  fs.readdir(uploadDir, (err, files) => {
     if (err) {
       return res.status(500).send("Error reading uploads directory");
     }
