@@ -41,7 +41,7 @@ app.use(
 app.use(express.json());
 
 // トップレベルのルート
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Welcome to the API");
 });
 
