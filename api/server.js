@@ -45,6 +45,11 @@ app.get("/", (req, res) => {
   res.send("Welcome to the API");
 });
 
+// ✅ `/api` ルートを追加
+app.get("/api", (req, res) => {
+  res.json({ message: "API is working!" });
+});
+
 // 認証ルート
 app.use("/api/auth", authRoutes);
 
