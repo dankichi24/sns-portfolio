@@ -82,5 +82,10 @@ app.use((req, res) => {
   res.status(404).json({ error: "ページが見つかりません" });
 });
 
-// サーバーを起動
-app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
+// サーバーを起動（Vercel では listen は不要）
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
+}
+
+// Express アプリをエクスポート（Vercel 用）
+module.exports = app;
