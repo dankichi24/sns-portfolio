@@ -1,17 +1,16 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
 const path = require("path");
 const fs = require("fs");
+require("dotenv").config();
+
+// ルーターのインポート
 const authRoutes = require("./routers/auth");
 const postRoutes = require("./routers/posts");
 const userRouter = require("./routers/user");
 const devicesRouter = require("./routers/devices");
 
-const PORT = 5000;
-
-// .env ファイルを読み込む
-require("dotenv").config();
+const app = express();
 
 // アップロード先ディレクトリを確認・作成
 const uploadDir = path.join(__dirname, "uploads/img");
@@ -22,7 +21,7 @@ if (!fs.existsSync(uploadDir)) {
 // CORS の設定
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   })
 );
@@ -32,7 +31,7 @@ app.use(express.json());
 
 // トップレベルのルート
 app.get("/", (req, res) => {
-  res.send("Welcome to the API");
+  res.send("Welcome to the API (Vercel Serverless)");
 });
 
 // 認証ルート
@@ -62,10 +61,10 @@ app.get("/uploads-debug", (req, res) => {
   });
 });
 
-// サーバーを起動
-app.listen(PORT, () => console.log(`Server is running on Port ${PORT}`));
-
 // 404エラーハンドリング
 app.use((req, res) => {
   res.status(404).json({ error: "ページが見つかりません" });
 });
+
+// Vercel用にエクスポート（Serverless対応）
+module.exports = app;
