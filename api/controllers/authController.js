@@ -25,7 +25,6 @@ const registerUser = async (req, res) => {
         .json({ error: "このメールアドレスはすでに使用されています" });
     }
 
-    // パスワードをハッシュ化
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -33,11 +32,10 @@ const registerUser = async (req, res) => {
         username,
         email,
         password: hashedPassword,
-        image: "/uploads/default-profile.png", // デフォルト画像
+        image: process.env.SUPABASE_DEFAULT_IMAGE,
       },
     });
 
-    // JWTトークンを生成 (有効期限は1日)
     const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
       expiresIn: "1d",
     });
