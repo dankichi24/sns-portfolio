@@ -1,30 +1,47 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const path = require("path");
+const supabase = require("../lib/supabase");
 
 // プロフィール画像アップロード処理
 const uploadProfileImage = async (req, res) => {
   const userId = parseInt(req.body.userId, 10);
-  const image = req.file ? `/uploads/${req.file.filename}` : null;
+  const file = req.file;
 
-  if (!image) {
+  if (!file) {
     return res.status(400).json({ error: "画像ファイルが見つかりません。" });
   }
 
   try {
+    const fileExt = file.originalname.split(".").pop();
+    const fileName = `profile-${userId}-${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(process.env.SUPABASE_BUCKET)
+      .upload(fileName, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error(uploadError);
+      return res
+        .status(500)
+        .json({ error: "Supabaseへのアップロードに失敗しました。" });
+    }
+
+    const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${fileName}`;
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { image },
+      data: { image: publicUrl },
     });
 
     return res.status(200).json({
       message: "プロフィール画像がアップロードされました。",
-      user: {
-        ...updatedUser,
-        image: `http://localhost:5000${image}`,
-      },
+      user: updatedUser,
     });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ error: "画像アップロード中にエラーが発生しました。" });

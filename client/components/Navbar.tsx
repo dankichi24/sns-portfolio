@@ -56,12 +56,17 @@ const Navbar = () => {
             <>
               <span className="flex items-center space-x-2">
                 <img
-                  src={`http://localhost:5000${
-                    user.image || "/uploads/default-profile.png"
-                  }`}
+                  src={
+                    user?.image
+                      ? `${user.image}?t=${Date.now()}`
+                      : `${
+                          process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE
+                        }?t=${Date.now()}`
+                  }
                   alt="プロフィール画像"
-                  className="w-8 h-8 rounded-full border-2 border-white bg-white"
+                  className="w-10 h-10 rounded-full object-cover bg-white"
                 />
+
                 <span className="text-sm font-semibold">
                   {user.username}さん
                 </span>

@@ -1,26 +1,30 @@
 import axios from "axios";
 
+const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+console.log("🚀 API Base URL:", baseURL);
+
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
-  withCredentials: true, // クッキー送受信が必要なら付ける
+  baseURL,
+  withCredentials: true, // クッキーを送受信する場合は true
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// リクエストインターセプターを追加して、毎回トークンをヘッダーに含める
+// キャッシュを無効化するエンドポイント
+const noCacheEndpoints = ["/api/posts", "/api/users"];
+
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("authToken");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // キャッシュ無効化のヘッダーを追加
-  Object.assign(config.headers, {
-    "Cache-Control": "no-cache",
-    Pragma: "no-cache",
-    Expires: "0",
-  });
+  // キャッシュ無効化を適用するAPIにのみ適用
+  if (noCacheEndpoints.some((endpoint) => config.url?.includes(endpoint))) {
+    config.headers["Cache-Control"] = "no-cache";
+  }
 
   return config;
 });

@@ -12,6 +12,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
   const [editedUsername, setEditedUsername] = useState(username || "");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const saveUsername = async () => {
     try {
@@ -87,17 +88,28 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
         {/* 画像編集部分 */}
         <img
           src={
-            user?.image
-              ? `http://localhost:5000${user.image}?t=${Date.now()}`
-              : `http://localhost:5000/uploads/default-profile.png`
+            previewUrl
+              ? previewUrl // ← 選択中の画像があればそれを優先表示
+              : user?.image
+              ? `${user.image}?t=${Date.now()}`
+              : `${
+                  process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE
+                }?t=${Date.now()}`
           }
           alt="プロフィール画像"
           className="w-40 h-40 rounded-full object-cover mb-4"
         />
+
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+          onChange={(e) => {
+            const file = e.target.files?.[0] || null;
+            setSelectedImage(file);
+            if (file) {
+              setPreviewUrl(URL.createObjectURL(file)); // プレビュー用URL生成
+            }
+          }}
           className="mt-2 text-sm"
         />
         <button
