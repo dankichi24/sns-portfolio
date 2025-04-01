@@ -105,11 +105,12 @@ const EditPost = () => {
         </div>
         {currentImageUrl && !preview && (
           <img
-            src={`http://localhost:5000${currentImageUrl}`}
+            src={`${currentImageUrl}?t=${Date.now()}`} // Supabaseの画像URLをそのまま使う
             alt="Current post image"
             className="w-full h-auto rounded-lg shadow-md mb-6"
           />
         )}
+
         {preview && (
           <img
             src={preview}

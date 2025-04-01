@@ -64,7 +64,7 @@ const Navbar = () => {
                         }?t=${Date.now()}`
                   }
                   alt="プロフィール画像"
-                  className="w-10 h-10 rounded-full object-cover bg-white"
+                  className="w-8 h-8 rounded-full object-cover bg-indigo-900"
                 />
 
                 <span className="text-sm font-semibold">

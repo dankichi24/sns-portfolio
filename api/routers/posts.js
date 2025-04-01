@@ -3,23 +3,9 @@ const router = express.Router();
 const postController = require("../controllers/postController");
 const authenticateToken = require("../middleware/authMiddleware");
 const multer = require("multer");
-const path = require("path");
 
-// Multerの設定（画像アップロード用）
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // アップロード先ディレクトリ
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
-    );
-  },
-});
-
-const upload = multer({ storage });
+// ✅ memoryStorage に変更！
+const upload = multer({ storage: multer.memoryStorage() });
 
 // 新規投稿（画像付き）
 router.post(
@@ -44,7 +30,7 @@ router.get("/:id", authenticateToken, postController.getPostById);
 // いいねのトグル
 router.post("/like", authenticateToken, postController.toggleLike);
 
-// 投稿の編集
+// 投稿の編集（画像付き）
 router.put(
   "/:postId",
   authenticateToken,

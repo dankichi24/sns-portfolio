@@ -1,10 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const supabase = require("../lib/supabase");
 
 // 新規投稿を作成する
 const createPost = async (req, res) => {
   const { content } = req.body;
-  const image = req.file ? `/uploads/${req.file.filename}` : null;
+  const file = req.file; // ← multer.memoryStorage で受け取る
   const userId = req.user.userId;
 
   if (!userId) {
@@ -12,10 +13,33 @@ const createPost = async (req, res) => {
   }
 
   try {
+    let imageUrl = null;
+
+    if (file) {
+      const fileExt = file.originalname.split(".").pop();
+      const fileName = `post-${userId}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(process.env.SUPABASE_BUCKET)
+        .upload(fileName, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error(uploadError);
+        return res
+          .status(500)
+          .json({ error: "画像のアップロードに失敗しました。" });
+      }
+
+      imageUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${fileName}`;
+    }
+
     const newPost = await prisma.post.create({
       data: {
         content,
-        image,
+        image: imageUrl,
         userId,
         createdAt: new Date(),
       },
@@ -23,6 +47,7 @@ const createPost = async (req, res) => {
 
     res.status(201).json({ message: "投稿が作成されました。", post: newPost });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "投稿の作成中に失敗しました。" });
   }
 };
@@ -45,7 +70,7 @@ const getPosts = async (req, res) => {
       user: {
         userId: post.user.id,
         username: post.user.username,
-        image: post.user.image || "/uploads/default-profile.png",
+        image: post.user.image || process.env.SUPABASE_DEFAULT_IMAGE, // ← ローカルじゃなくSupabaseのURLに切り替え
       },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,
@@ -86,7 +111,7 @@ const toggleLike = async (req, res) => {
 const editPost = async (req, res) => {
   const { postId } = req.params;
   const { content } = req.body;
-  const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+  const file = req.file;
   const userId = req.user.userId;
 
   try {
@@ -105,7 +130,27 @@ const editPost = async (req, res) => {
     }
 
     const updatedData = { content };
-    if (image) updatedData.image = image;
+
+    if (file) {
+      const fileExt = file.originalname.split(".").pop();
+      const fileName = `post-${userId}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(process.env.SUPABASE_BUCKET)
+        .upload(fileName, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error(uploadError);
+        return res
+          .status(500)
+          .json({ error: "画像のアップロードに失敗しました。" });
+      }
+
+      updatedData.image = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${fileName}`;
+    }
 
     const updatedPost = await prisma.post.update({
       where: { id: Number(postId) },
@@ -116,6 +161,7 @@ const editPost = async (req, res) => {
       .status(200)
       .json({ message: "投稿が更新されました。", post: updatedPost });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "投稿の更新中にエラーが発生しました。" });
   }
 };
@@ -191,7 +237,7 @@ const getMyPosts = async (req, res) => {
       user: {
         userId: post.user.id,
         username: post.user.username,
-        image: post.user.image || "/uploads/default-profile.png",
+        image: post.user.image || process.env.SUPABASE_DEFAULT_IMAGE,
       },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,
@@ -226,7 +272,7 @@ const getFavoritePosts = async (req, res) => {
       user: {
         userId: favorite.post.user.id,
         username: favorite.post.user.username,
-        image: favorite.post.user.image || "/uploads/default-profile.png",
+        image: favorite.post.user.image || process.env.SUPABASE_DEFAULT_IMAGE,
       },
       liked: true,
       likeCount: favorite.post.likes.length,

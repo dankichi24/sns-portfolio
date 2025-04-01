@@ -28,11 +28,15 @@ const PostItem: React.FC<PostItemProps> = ({
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <img
-            src={`http://localhost:5000${
-              post.user.image || "/uploads/default-profile.png"
-            }`}
+            src={
+              post.user.image
+                ? `${post.user.image}?t=${Date.now()}`
+                : `${
+                    process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE
+                  }?t=${Date.now()}`
+            }
             alt="User profile"
-            className="w-8 h-8 rounded-full mr-2"
+            className="w-8 h-8 rounded-full object-cover mr-2"
           />
           <Link
             href={`/devices/${post.user.userId}`}
@@ -78,11 +82,11 @@ const PostItem: React.FC<PostItemProps> = ({
       {/* 画像の表示 */}
       {post.image && (
         <img
-          src={`http://localhost:5000${post.image}`}
+          src={`${post.image}?t=${Date.now()}`}
           alt="Post image"
           className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer mt-4"
           style={{ maxHeight: "300px", objectFit: "cover" }}
-          onClick={() => openModal(`http://localhost:5000${post.image}`)}
+          onClick={() => openModal(`${post.image}?t=${Date.now()}`)}
         />
       )}
 
