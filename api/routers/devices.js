@@ -8,15 +8,8 @@ const {
 
 const router = express.Router();
 
-// Multerの設定（画像アップロード用）
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/img/"); // 保存先ディレクトリ
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname); // ユニークなファイル名
-  },
-});
+// ✅ Multerの設定（メモリ上に画像を保持）
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // デバイス登録

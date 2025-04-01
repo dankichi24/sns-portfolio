@@ -17,6 +17,7 @@ const DeviceList: React.FC = () => {
   const [newDeviceName, setNewDeviceName] = useState("");
   const [newDeviceImage, setNewDeviceImage] = useState<File | null>(null);
   const [newDeviceComment, setNewDeviceComment] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // ✅ プレビュー用
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
 
@@ -69,6 +70,7 @@ const DeviceList: React.FC = () => {
         setNewDeviceName("");
         setNewDeviceImage(null);
         setNewDeviceComment("");
+        setPreviewUrl(null); // ✅ プレビュー初期化
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -134,6 +136,7 @@ const DeviceList: React.FC = () => {
       </h2>
 
       <div className="flex flex-wrap gap-8 w-full max-w-7xl justify-center">
+        {/* フォーム */}
         <div className="bg-gray-50 p-6 rounded-lg shadow-md max-w-md w-full">
           <form
             onSubmit={(e) => {
@@ -185,19 +188,45 @@ const DeviceList: React.FC = () => {
                 type="file"
                 accept="image/*"
                 ref={fileInputRef}
-                onChange={(e) => setNewDeviceImage(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setNewDeviceImage(file);
+
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setPreviewUrl(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  } else {
+                    setPreviewUrl(null);
+                  }
+                }}
                 className="block w-full text-sm mt-1"
               />
             </div>
+
+            {/* ✅ プレビュー画像表示 */}
+            {previewUrl && (
+              <div className="mt-4">
+                <img
+                  src={previewUrl}
+                  alt="プレビュー"
+                  className="w-full h-48 object-cover rounded-lg shadow-md"
+                />
+              </div>
+            )}
+
             <button
               type="submit"
-              className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-blue-700 transition duration-300 w-32"
+              className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-blue-700 transition duration-300 w-32 mt-2"
             >
               デバイスを追加
             </button>
           </form>
         </div>
 
+        {/* デバイス表示 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl justify-end">
           {devices.map((device) => (
             <div
@@ -205,7 +234,7 @@ const DeviceList: React.FC = () => {
               className="border rounded-lg p-6 bg-white shadow-lg flex flex-col items-center w-64"
             >
               <img
-                src={`http://localhost:5000${device.image}`}
+                src={device.image}
                 alt={device.name}
                 className="w-full h-48 rounded-lg object-cover mb-4"
               />

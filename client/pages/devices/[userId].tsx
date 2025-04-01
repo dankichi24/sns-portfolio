@@ -55,7 +55,7 @@ const UserDevices = () => {
               className="border rounded-lg p-6 bg-white shadow-lg flex flex-col items-center"
             >
               <img
-                src={`http://localhost:5000${device.image}`}
+                src={device.image}
                 alt={device.name}
                 className="w-full h-48 rounded-lg object-cover mb-4"
               />
