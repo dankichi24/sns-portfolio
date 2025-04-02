@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FiEdit } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
 import { Post } from "../types";
+import ImageWithCacheBusting from "./ImageWithCacheBusting";
 
 interface PostItemProps {
   post: Post;
@@ -81,12 +82,18 @@ const PostItem: React.FC<PostItemProps> = ({
       </div>
       {/* 画像の表示 */}
       {post.image && (
-        <img
-          src={`${post.image}?t=${Date.now()}`}
+        <ImageWithCacheBusting
+          src={post.image}
           alt="Post image"
           className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer mt-4"
           style={{ maxHeight: "300px", objectFit: "cover" }}
-          onClick={() => openModal(`${post.image}?t=${Date.now()}`)}
+          cacheBust={!!post.justUpdated} // ← 投稿直後だけ true にする
+          onClick={() =>
+            post.image &&
+            openModal(
+              post.justUpdated ? `${post.image}?v=${Date.now()}` : post.image
+            )
+          }
         />
       )}
 

@@ -12,6 +12,9 @@ export interface Post {
   };
   liked: boolean;
   likeCount: number;
+
+  // ✅ 投稿直後だけキャッシュバスターを有効にするためのフラグ
+  justUpdated?: boolean;
 }
 
 export interface Device {

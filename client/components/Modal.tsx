@@ -16,11 +16,10 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-4 rounded shadow-lg max-w-screen-lg max-h-screen overflow-auto">
-        {/* 画像の最大幅と高さを制限 */}
         <img
           src={selectedImage}
           alt="Large view"
-          className="max-w-full max-h-screen mx-auto"
+          className="w-auto max-w-[90vw] h-auto max-h-[80vh] mx-auto rounded-md shadow-md"
           style={{ objectFit: "contain" }}
         />
         <div className="flex justify-center mt-4">
