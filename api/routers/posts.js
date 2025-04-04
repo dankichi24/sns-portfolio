@@ -3,8 +3,6 @@ const router = express.Router();
 const postController = require("../controllers/postController");
 const authenticateToken = require("../middleware/authMiddleware");
 const multer = require("multer");
-
-// ✅ memoryStorage に変更！
 const upload = multer({ storage: multer.memoryStorage() });
 
 // 新規投稿（画像付き）

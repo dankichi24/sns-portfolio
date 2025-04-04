@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const supabase = require("../lib/supabase"); // ✅ 追加
+const supabase = require("../lib/supabase");
 
 // デバイスの追加
 const addDevice = async (req, res) => {
@@ -14,11 +14,9 @@ const addDevice = async (req, res) => {
   }
 
   try {
-    // ✅ ファイル名を生成
     const fileExt = file.originalname.split(".").pop();
     const fileName = `device-${userId}-${Date.now()}.${fileExt}`;
 
-    // ✅ Supabase Storage にアップロード
     const { error: uploadError } = await supabase.storage
       .from(process.env.SUPABASE_BUCKET)
       .upload(fileName, file.buffer, {
@@ -27,16 +25,13 @@ const addDevice = async (req, res) => {
       });
 
     if (uploadError) {
-      console.error(uploadError);
       return res
         .status(500)
         .json({ message: "画像のアップロードに失敗しました。" });
     }
 
-    // ✅ 公開URLを生成
     const imagePath = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${fileName}`;
 
-    // ✅ DBへ登録
     const newDevice = await prisma.device.create({
       data: {
         name,
@@ -50,7 +45,6 @@ const addDevice = async (req, res) => {
 
     res.status(201).json(newDevice);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "デバイス登録中にエラーが発生しました。" });
   }
 };

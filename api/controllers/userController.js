@@ -23,7 +23,6 @@ const uploadProfileImage = async (req, res) => {
       });
 
     if (uploadError) {
-      console.error(uploadError);
       return res
         .status(500)
         .json({ error: "Supabaseへのアップロードに失敗しました。" });
@@ -41,7 +40,6 @@ const uploadProfileImage = async (req, res) => {
       user: updatedUser,
     });
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ error: "画像アップロード中にエラーが発生しました。" });

@@ -8,7 +8,6 @@ const {
 
 const router = express.Router();
 
-// ✅ Multerの設定（メモリ上に画像を保持）
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 

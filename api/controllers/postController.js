@@ -5,7 +5,7 @@ const supabase = require("../lib/supabase");
 // 新規投稿を作成する
 const createPost = async (req, res) => {
   const { content } = req.body;
-  const file = req.file; // ← multer.memoryStorage で受け取る
+  const file = req.file;
   const userId = req.user.userId;
 
   if (!userId) {
@@ -27,7 +27,6 @@ const createPost = async (req, res) => {
         });
 
       if (uploadError) {
-        console.error(uploadError);
         return res
           .status(500)
           .json({ error: "画像のアップロードに失敗しました。" });
@@ -47,7 +46,6 @@ const createPost = async (req, res) => {
 
     res.status(201).json({ message: "投稿が作成されました。", post: newPost });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "投稿の作成中に失敗しました。" });
   }
 };
@@ -70,7 +68,7 @@ const getPosts = async (req, res) => {
       user: {
         userId: post.user.id,
         username: post.user.username,
-        image: post.user.image || process.env.SUPABASE_DEFAULT_IMAGE, // ← ローカルじゃなくSupabaseのURLに切り替え
+        image: post.user.image || process.env.SUPABASE_DEFAULT_IMAGE,
       },
       liked: post.likes.some((like) => like.userId === userId),
       likeCount: post.likes.length,
@@ -143,7 +141,6 @@ const editPost = async (req, res) => {
         });
 
       if (uploadError) {
-        console.error(uploadError);
         return res
           .status(500)
           .json({ error: "画像のアップロードに失敗しました。" });
@@ -161,7 +158,6 @@ const editPost = async (req, res) => {
       .status(200)
       .json({ message: "投稿が更新されました。", post: updatedPost });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: "投稿の更新中にエラーが発生しました。" });
   }
 };
@@ -252,7 +248,6 @@ const getMyPosts = async (req, res) => {
 // 自分がお気に入りした投稿を取得する関数
 const getFavoritePosts = async (req, res) => {
   const userId = req.user.userId;
-
   try {
     const favoritePosts = await prisma.like.findMany({
       where: { userId },
