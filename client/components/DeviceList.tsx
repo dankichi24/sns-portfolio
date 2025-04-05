@@ -5,6 +5,9 @@ import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
 
+// ✅ API URL を環境変数から取得
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 interface Device {
   id: number;
   name: string;
@@ -17,7 +20,7 @@ const DeviceList: React.FC = () => {
   const [newDeviceName, setNewDeviceName] = useState("");
   const [newDeviceImage, setNewDeviceImage] = useState<File | null>(null);
   const [newDeviceComment, setNewDeviceComment] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // ✅ プレビュー用
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
 
@@ -27,7 +30,7 @@ const DeviceList: React.FC = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/devices?userId=${user.userId}`
+          `${API_URL}/api/devices?userId=${user.userId}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -59,7 +62,7 @@ const DeviceList: React.FC = () => {
     formData.append("userId", String(user.userId));
 
     try {
-      const response = await fetch("http://localhost:5000/api/devices/add", {
+      const response = await fetch(`${API_URL}/api/devices/add`, {
         method: "POST",
         body: formData,
       });
@@ -70,7 +73,7 @@ const DeviceList: React.FC = () => {
         setNewDeviceName("");
         setNewDeviceImage(null);
         setNewDeviceComment("");
-        setPreviewUrl(null); // ✅ プレビュー初期化
+        setPreviewUrl(null);
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -110,7 +113,7 @@ const DeviceList: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/devices/delete/${deviceId}`,
+        `${API_URL}/api/devices/delete/${deviceId}`,
         {
           method: "DELETE",
         }
