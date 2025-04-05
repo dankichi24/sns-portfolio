@@ -17,7 +17,6 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   const [loading, setLoading] = useState(false);
   const [animateLike, setAnimateLike] = useState<number | null>(null);
 
-  // 投稿データを取得する関数
   const fetchMyPosts = async () => {
     setLoading(true);
     try {
@@ -28,14 +27,12 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
     }
   };
 
-  // データ取得を行う useEffect
   useEffect(() => {
     if (active) {
       fetchMyPosts();
     }
   }, [active, userId]);
 
-  // いいねのトグル処理
   const toggleLike = async (postId: number) => {
     try {
       setAnimateLike(postId);

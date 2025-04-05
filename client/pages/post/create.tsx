@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import apiClient from "../../lib/apiClient"; // APIクライアントがあると仮定
+import apiClient from "../../lib/apiClient";
 
 const CreatePost = () => {
   const [content, setContent] = useState("");
-  const [image, setImage] = useState<File | null>(null); // 画像を扱うためのstate
-  const [preview, setPreview] = useState<string | null>(null); // プレビュー画像のURLを保持するstate
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const router = useRouter();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,46 +17,37 @@ const CreatePost = () => {
       reader.onloadend = () => {
         setPreview(reader.result as string);
       };
-      reader.readAsDataURL(file); // ファイルをData URLとして読み込む
+      reader.readAsDataURL(file);
     } else {
-      setPreview(null); // ファイルがクリアされた場合、プレビューもクリア
+      setPreview(null);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData(); // フォームデータを使用してコンテンツ、画像を送信
+    const formData = new FormData();
     formData.append("content", content);
     if (image) {
-      formData.append("image", image); // 画像があれば追加
+      formData.append("image", image);
     }
 
-    // 送信するデータをログに表示
-    Array.from(formData.entries()).forEach(([key, value]) => {
-      console.log(`${key}:`, value);
-    });
-
-    console.log(
-      "Authorization Header:",
-      `Bearer ${localStorage.getItem("token")}`
-    );
-
     try {
-      // APIにPOSTリクエストを送信
+      const token = localStorage.getItem("authToken");
       const response = await apiClient.post("/api/posts", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // トークンが設定されていることを確認
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      // 投稿成功時の処理（ホームにリダイレクトなど）
       if (response.status === 201) {
         router.push("/home");
       }
     } catch (error) {
-      console.error("Error creating post", error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error creating post:", error);
+      }
     }
   };
 

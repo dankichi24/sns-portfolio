@@ -3,19 +3,20 @@ import { useRouter } from "next/router";
 import { useAuth } from "../lib/authContext";
 import { useEffect } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const Navbar = () => {
   const { user, logout, login, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // ユーザー情報が無い場合、再取得
     if (!user) {
       const fetchUser = async () => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
         try {
-          const response = await fetch("http://localhost:5000/api/auth/me", {
+          const response = await fetch(`${API_URL}/api/auth/me`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -28,7 +29,9 @@ const Navbar = () => {
             logout();
           }
         } catch (error) {
-          console.error("Error fetching user:", error);
+          if (process.env.NODE_ENV !== "production") {
+            console.error("Error fetching user:", error);
+          }
         }
       };
       fetchUser();
@@ -45,7 +48,6 @@ const Navbar = () => {
   return (
     <header className="w-full bg-indigo-900 text-white py-4 sticky top-0 z-50">
       <div className="w-full flex justify-between items-center px-4 sm:px-12">
-        {/* 左側：タイトル */}
         <Link
           href={user ? "/home" : "/"}
           className="text-lg sm:text-2xl font-bold hover:opacity-75 transition-opacity duration-300"
@@ -53,7 +55,6 @@ const Navbar = () => {
           Gaming Device Share
         </Link>
 
-        {/* 右側：ログイン or メニュー */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {user ? (
             <>

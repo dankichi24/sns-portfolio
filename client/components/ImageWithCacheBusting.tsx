@@ -1,4 +1,3 @@
-// components/ImageWithCacheBusting.tsx
 import React from "react";
 
 interface ImageWithCacheBustingProps

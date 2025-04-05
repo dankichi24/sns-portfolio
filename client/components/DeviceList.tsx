@@ -4,8 +4,6 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
-
-// ✅ API URL を環境変数から取得
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 interface Device {
@@ -27,7 +25,6 @@ const DeviceList: React.FC = () => {
   useEffect(() => {
     const fetchDevices = async () => {
       if (!user) return;
-
       try {
         const response = await fetch(
           `${API_URL}/api/devices?userId=${user.userId}`
@@ -37,7 +34,9 @@ const DeviceList: React.FC = () => {
           setDevices(data);
         }
       } catch (error) {
-        console.error("エラーが発生しました:", error);
+        if (process.env.NODE_ENV !== "production") {
+          console.error("エラーが発生しました:", error);
+        }
       }
     };
 
@@ -74,7 +73,6 @@ const DeviceList: React.FC = () => {
         setNewDeviceImage(null);
         setNewDeviceComment("");
         setPreviewUrl(null);
-
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -83,7 +81,9 @@ const DeviceList: React.FC = () => {
         alert(errorData.message || "デバイスの登録に失敗しました。");
       }
     } catch (error) {
-      console.error(error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("デバイス追加エラー:", error);
+      }
       alert("エラーが発生しました。");
     }
   };
@@ -127,7 +127,9 @@ const DeviceList: React.FC = () => {
         alert("デバイスの削除に失敗しました。");
       }
     } catch (error) {
-      console.error("デバイス削除中にエラーが発生しました:", error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("デバイス削除中にエラーが発生しました:", error);
+      }
       alert("エラーが発生しました。");
     }
   };
@@ -139,7 +141,6 @@ const DeviceList: React.FC = () => {
       </h2>
 
       <div className="flex flex-wrap gap-8 w-full max-w-7xl justify-center">
-        {/* フォーム */}
         <div className="bg-gray-50 p-6 rounded-lg shadow-md max-w-md w-full">
           <form
             onSubmit={(e) => {
@@ -209,7 +210,6 @@ const DeviceList: React.FC = () => {
               />
             </div>
 
-            {/* ✅ プレビュー画像表示 */}
             {previewUrl && (
               <div className="mt-4">
                 <img
@@ -229,7 +229,6 @@ const DeviceList: React.FC = () => {
           </form>
         </div>
 
-        {/* デバイス表示 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl place-items-center sm:place-items-start">
           {devices.map((device) => (
             <div

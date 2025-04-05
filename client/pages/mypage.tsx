@@ -24,7 +24,6 @@ const MyPage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-md mt-6">
-        {/* タブナビゲーション */}
         <div className="flex justify-center space-x-8 border-b pb-4">
           {["profile", "history", "favorites"].map((tab) => (
             <button
@@ -45,7 +44,6 @@ const MyPage = () => {
           ))}
         </div>
 
-        {/* コンテンツ切り替え */}
         <div className="mt-6">
           {activeTab === "profile" && <Profile username={user.username} />}
           {activeTab === "history" && (

@@ -2,6 +2,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Device } from "../../types";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const UserDevices = () => {
   const router = useRouter();
   const { userId } = router.query;
@@ -16,19 +18,20 @@ const UserDevices = () => {
     const fetchUserDevices = async () => {
       setLoading(true);
       try {
-        const userResponse = await fetch(
-          `http://localhost:5000/api/users/${userId}`
-        );
+        const userResponse = await fetch(`${API_URL}/api/users/${userId}`);
         if (userResponse.ok) {
           const userData = await userResponse.json();
           setUsername(userData.username || "ユーザー");
         }
-
         const deviceResponse = await fetch(
-          `http://localhost:5000/api/devices?userId=${userId}`
+          `${API_URL}/api/devices?userId=${userId}`
         );
         if (deviceResponse.ok) {
           setDevices(await deviceResponse.json());
+        }
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error("ユーザーデバイス取得失敗:", err);
         }
       } finally {
         setLoading(false);

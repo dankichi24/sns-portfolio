@@ -25,7 +25,6 @@ const PostItem: React.FC<PostItemProps> = ({
 }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
-      {/* 投稿者情報 */}
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <img
@@ -54,7 +53,10 @@ const PostItem: React.FC<PostItemProps> = ({
                   pathname: `/post/edit`,
                   query: {
                     id: post.id,
-                    returnUrl: `${window.location.pathname}?activeTab=${activeTab}`,
+                    returnUrl:
+                      typeof window !== "undefined"
+                        ? `${window.location.pathname}?activeTab=${activeTab}`
+                        : "",
                   },
                 }}
               >
@@ -76,18 +78,16 @@ const PostItem: React.FC<PostItemProps> = ({
         </div>
       </div>
 
-      {/* 本文を名前の下に移動し、間隔を調整 + 改行を適用 */}
       <div className="text-gray-700 mt-5 mb-4 leading-relaxed whitespace-pre-wrap pl-10">
         {post.content}
       </div>
-      {/* 画像の表示 */}
       {post.image && (
         <ImageWithCacheBusting
           src={post.image}
           alt="Post image"
           className="max-w-full h-auto mx-auto rounded-md shadow-sm cursor-pointer mt-4"
           style={{ maxHeight: "300px", objectFit: "cover" }}
-          cacheBust={!!post.justUpdated} // ← 投稿直後だけ true にする
+          cacheBust={!!post.justUpdated}
           onClick={() =>
             post.image &&
             openModal(
@@ -97,7 +97,6 @@ const PostItem: React.FC<PostItemProps> = ({
         />
       )}
 
-      {/* いいねボタンとカウント */}
       <div className="flex justify-end items-center mt-4">
         <button
           onClick={() => toggleLike(post.id)}

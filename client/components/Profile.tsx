@@ -6,6 +6,8 @@ interface ProfileProps {
   username: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+
 const Profile: React.FC<ProfileProps> = ({ username }) => {
   const { user, login } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
@@ -17,29 +19,29 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
   const saveUsername = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      if (!user) throw new Error("ユーザー情報が取得できませんでした。");
+      if (!user || !token) throw new Error("ユーザー情報がありません");
 
-      const response = await fetch(
-        "http://localhost:5000/api/users/update-username",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            userId: user.userId,
-            newUsername: editedUsername,
-          }),
-        }
-      );
+      const response = await fetch(`${API_URL}/api/users/update-username`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId: user.userId,
+          newUsername: editedUsername,
+        }),
+      });
 
-      if (!response.ok) throw new Error("ユーザー名の更新に失敗しました。");
+      if (!response.ok) throw new Error("ユーザー名の更新に失敗しました");
 
       const data = await response.json();
       login(data.user);
-      window.location.reload();
-    } catch (error) {
+
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
+    } catch {
       alert("エラーが発生しました。");
     }
   };
@@ -59,7 +61,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
     try {
       const token = localStorage.getItem("authToken");
       const response = await fetch(
-        "http://localhost:5000/api/users/upload-profile-image",
+        `${API_URL}/api/users/upload-profile-image`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -67,12 +69,15 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
         }
       );
 
-      if (!response.ok) throw new Error("画像アップロードに失敗しました。");
+      if (!response.ok) throw new Error("アップロード失敗");
 
       const data = await response.json();
       login(data.user);
-      window.location.reload();
-    } catch (error) {
+
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
+    } catch {
       alert("画像アップロード中にエラーが発生しました。");
     } finally {
       setIsUploading(false);
@@ -85,11 +90,10 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
         プロフィール
       </h1>
       <div className="flex flex-col items-center">
-        {/* 画像編集部分 */}
         <img
           src={
             previewUrl
-              ? previewUrl // ← 選択中の画像があればそれを優先表示
+              ? previewUrl
               : user?.image
               ? `${user.image}?t=${Date.now()}`
               : `${
@@ -107,7 +111,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
             const file = e.target.files?.[0] || null;
             setSelectedImage(file);
             if (file) {
-              setPreviewUrl(URL.createObjectURL(file)); // プレビュー用URL生成
+              setPreviewUrl(URL.createObjectURL(file));
             }
           }}
           className="mt-2 text-sm"
@@ -120,7 +124,6 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
           {isUploading ? "アップロード中..." : "画像をアップロード"}
         </button>
 
-        {/* 名前部分 */}
         <div className="text-lg font-semibold text-black mt-8">
           {isEditing ? (
             <div className="flex flex-col items-center space-y-3">
@@ -161,10 +164,8 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
           )}
         </div>
 
-        {/* 線を追加 */}
         <hr className="border-t border-gray-300 w-full my-8" />
 
-        {/* 使用デバイス一覧 */}
         <DeviceList />
       </div>
     </div>

@@ -40,7 +40,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
           }
         })
-        .catch(() => localStorage.removeItem("authToken"))
+        .catch((error) => {
+          if (process.env.NODE_ENV !== "production") {
+            console.error("認証情報取得に失敗しました:", error);
+          }
+          localStorage.removeItem("authToken");
+        })
         .finally(() => setIsLoading(false));
     } else {
       setIsLoading(false);

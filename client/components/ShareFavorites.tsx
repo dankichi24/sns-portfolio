@@ -25,6 +25,8 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
       try {
         const response = await apiClient.get("/api/posts/favorites");
         setFavoritePosts(response.data);
+      } catch {
+        MySwal.fire("エラー", "お気に入りの取得に失敗しました。", "error");
       } finally {
         setLoading(false);
       }
@@ -33,7 +35,6 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
     fetchFavoritePosts();
   }, [active]);
 
-  // 「いいね」を解除して投稿を削除
   const handleUnlike = async (postId: number) => {
     try {
       setFavoritePosts((prevPosts) =>
@@ -54,10 +55,10 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
       }, 300);
     } catch {
       setAnimateLike(null);
+      MySwal.fire("エラー", "いいねの解除に失敗しました。", "error");
     }
   };
 
-  // 削除確認アラート
   const confirmDeletePost = (postId: number) => {
     MySwal.fire({
       title: "削除してもよろしいですか？",
@@ -76,7 +77,6 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
     });
   };
 
-  // 投稿削除処理
   const handleDeletePost = async (postId: number) => {
     try {
       await apiClient.delete(`/api/posts/${postId}`);

@@ -4,7 +4,7 @@ import apiClient from "../../lib/apiClient";
 
 const EditPost = () => {
   const router = useRouter();
-  const { id, returnUrl } = router.query; // 編集元のURLをクエリとして受け取る
+  const { id, returnUrl } = router.query;
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
@@ -20,7 +20,9 @@ const EditPost = () => {
           setCurrentImageUrl(response.data.image);
           setIsLoading(false);
         } catch (error) {
-          console.error("Error fetching post:", error);
+          if (process.env.NODE_ENV !== "production") {
+            console.error("Error fetching post:", error);
+          }
         }
       }
     };
@@ -56,15 +58,16 @@ const EditPost = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      router.push((returnUrl as string) || "/home"); // 編集元のページに戻る
+      router.push((returnUrl as string) || "/home");
     } catch (error) {
-      console.error("Error updating post:", error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error updating post:", error);
+      }
     }
   };
 
   const handleCancel = () => {
-    router.push((returnUrl as string) || "/home"); // 編集元のページに戻る
+    router.push((returnUrl as string) || "/home");
   };
 
   if (isLoading) {
@@ -105,7 +108,7 @@ const EditPost = () => {
         </div>
         {currentImageUrl && !preview && (
           <img
-            src={`${currentImageUrl}?t=${Date.now()}`} // Supabaseの画像URLをそのまま使う
+            src={`${currentImageUrl}?t=${Date.now()}`}
             alt="Current post image"
             className="w-full h-auto rounded-lg shadow-md mb-6"
           />
