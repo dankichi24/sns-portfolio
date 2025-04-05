@@ -2,8 +2,6 @@ const prisma = require("../lib/prisma");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const prisma = new PrismaClient();
-
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // 新規ユーザー登録コントローラー
