@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js", 
-    "build": "npx prisma generate"
+    "dev": "nodemon server.js",
+    "build": "npx prisma generate",
+    "vercel-build": "npm run build"
   },
   "keywords": [],
   "author": "",
