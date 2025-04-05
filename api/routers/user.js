@@ -17,7 +17,6 @@ router.get("/profile", authenticateToken, (req, res) => {
 router.get("/:userId", getUserById);
 router.put("/update-username", authenticateToken, updateUsername);
 
-// ✅ multerを追加してファイル受け取るように！
 router.post(
   "/upload-profile-image",
   authenticateToken,
