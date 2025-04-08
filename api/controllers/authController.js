@@ -55,6 +55,7 @@ const registerUser = async (req, res) => {
 // ユーザーログインコントローラー
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+  console.log("📥 loginUser リクエスト受信:", email);
 
   if (!email || !password) {
     return res
@@ -64,7 +65,9 @@ const loginUser = async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
+
     if (!user) {
+      console.log("❌ ユーザーが見つかりません");
       return res
         .status(401)
         .json({ error: "メールアドレスまたはパスワードが正しくありません" });
@@ -72,15 +75,21 @@ const loginUser = async (req, res) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
+      console.log("❌ パスワードが一致しません");
       return res
         .status(401)
         .json({ error: "メールアドレスまたはパスワードが正しくありません" });
     }
 
-    // JWTトークンを生成 (有効期限は1日)
-    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    console.log("✅ ログイン成功:", user.email);
 
     return res.json({
       message: "ログイン成功",
@@ -93,6 +102,7 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("🔥 loginUser サーバーエラー:", error);
     return res.status(500).json({ error: "サーバーエラーが発生しました" });
   }
 };
