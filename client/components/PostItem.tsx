@@ -27,17 +27,17 @@ const PostItem: React.FC<PostItemProps> = ({
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <img
+          <ImageWithCacheBusting
             src={
               post.user.image
-                ? `${post.user.image}?t=${Date.now()}`
-                : `${
-                    process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE
-                  }?t=${Date.now()}`
+                ? post.user.image
+                : process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE || ""
             }
             alt="User profile"
             className="w-8 h-8 rounded-full object-cover mr-2"
+            cacheBust={false}
           />
+
           <Link
             href={`/devices/${post.user.userId}`}
             className="text-xl font-semibold text-blue-600 hover:underline"
@@ -96,7 +96,6 @@ const PostItem: React.FC<PostItemProps> = ({
           }
         />
       )}
-
       <div className="flex justify-end items-center mt-4">
         <button
           onClick={() => toggleLike(post.id)}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../lib/authContext";
 import DeviceList from "./DeviceList";
+import ImageWithCacheBusting from "./ImageWithCacheBusting";
 
 interface ProfileProps {
   username: string;
@@ -90,18 +91,17 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
         プロフィール
       </h1>
       <div className="flex flex-col items-center">
-        <img
+        <ImageWithCacheBusting
           src={
             previewUrl
               ? previewUrl
               : user?.image
-              ? `${user.image}?t=${Date.now()}`
-              : `${
-                  process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE
-                }?t=${Date.now()}`
+              ? user.image
+              : process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE || ""
           }
           alt="プロフィール画像"
           className="w-40 h-40 rounded-full object-cover mb-4"
+          cacheBust={!!previewUrl}
         />
 
         <input
