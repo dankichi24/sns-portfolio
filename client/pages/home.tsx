@@ -44,27 +44,27 @@ const Home = () => {
   }, []);
 
   const toggleLike = async (postId: number) => {
+    const prevPosts = [...posts];
+
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              liked: !post.liked,
+              likeCount: post.liked ? post.likeCount - 1 : post.likeCount + 1,
+            }
+          : post
+      )
+    );
+
+    setAnimateLike(postId);
+    setTimeout(() => setAnimateLike(null), 300);
+
     try {
-      const response = await apiClient.post("/api/posts/like", { postId });
-
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
-                liked: response.data.liked,
-                likeCount: response.data.liked
-                  ? post.likeCount + 1
-                  : post.likeCount - 1,
-              }
-            : post
-        )
-      );
-
-      setAnimateLike(postId);
-      setTimeout(() => setAnimateLike(null), 300);
-    } catch (error) {
-      console.error("いいねに失敗しました", error);
+      await apiClient.post("/api/posts/like", { postId });
+    } catch {
+      setPosts(prevPosts);
     }
   };
 
