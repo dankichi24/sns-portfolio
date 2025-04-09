@@ -46,13 +46,16 @@ const Home = () => {
   const toggleLike = async (postId: number) => {
     try {
       const response = await apiClient.post("/api/posts/like", { postId });
+
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
             ? {
                 ...post,
                 liked: response.data.liked,
-                likeCount: response.data.likeCount,
+                likeCount: response.data.liked
+                  ? post.likeCount + 1
+                  : post.likeCount - 1,
               }
             : post
         )
@@ -60,7 +63,9 @@ const Home = () => {
 
       setAnimateLike(postId);
       setTimeout(() => setAnimateLike(null), 300);
-    } catch {}
+    } catch (error) {
+      console.error("いいねに失敗しました", error);
+    }
   };
 
   const confirmDeletePost = (postId: number) => {
