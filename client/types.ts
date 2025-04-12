@@ -1,5 +1,3 @@
-// types.ts
-
 export interface Post {
   id: number;
   content: string;
@@ -8,12 +6,10 @@ export interface Post {
   user: {
     userId: number;
     username: string;
-    image?: string; // プロフィール画像
+    image?: string;
   };
   liked: boolean;
   likeCount: number;
-
-  // ✅ 投稿直後だけキャッシュバスターを有効にするためのフラグ
   justUpdated?: boolean;
 }
 
