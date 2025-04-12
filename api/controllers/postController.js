@@ -96,7 +96,6 @@ const toggleLike = async (req, res) => {
       await prisma.like.create({ data: { userId, postId } });
     }
 
-    // 軽量化: likeCount は返さない
     res.json({ liked: !existingLike });
   } catch (error) {
     res.status(500).json({ error: "いいねのトグル中にエラーが発生しました。" });
