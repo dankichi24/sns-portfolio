@@ -81,7 +81,7 @@ const updateUsername = async (req, res) => {
   }
 };
 
-// ユーザー情報取得処理
+// ユーザー情報取得を処理
 const getUserById = async (req, res) => {
   const userId = parseInt(req.params.userId, 10);
 
