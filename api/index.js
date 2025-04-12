@@ -26,7 +26,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the API");
+  res.send("Welcome to the API (Vercel)");
 });
 
 app.use("/api/auth", authRoutes);
@@ -38,7 +38,4 @@ app.use((req, res) => {
   res.status(404).json({ error: "ページが見つかりません" });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  // console.log(`🚀 Server is running on port ${PORT}`);
-});
+module.exports = app;
