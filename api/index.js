@@ -26,7 +26,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the API (Vercel)");
+  res.send("Welcome to the API");
 });
 
 app.use("/api/auth", authRoutes);
