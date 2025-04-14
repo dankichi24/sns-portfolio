@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/authContext";
 import DeviceList from "@/components/profile/DeviceList";
 import ImageWithCacheBusting from "@/components/ImageWithCacheBusting";
@@ -14,6 +14,7 @@ const Profile: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (user?.username) {
@@ -42,7 +43,6 @@ const Profile: React.FC = () => {
 
       const data = await response.json();
       login(data.user);
-
       setIsEditing(false);
     } catch {
       alert("エラーが発生しました。");
@@ -76,7 +76,8 @@ const Profile: React.FC = () => {
 
       const data = await response.json();
       login(data.user);
-      setPreviewUrl(null);
+
+      window.location.reload();
     } catch {
       alert("画像アップロード中にエラーが発生しました。");
     } finally {
@@ -106,6 +107,7 @@ const Profile: React.FC = () => {
         <input
           type="file"
           accept="image/*"
+          ref={fileInputRef}
           onChange={(e) => {
             const file = e.target.files?.[0] || null;
             setSelectedImage(file);
@@ -115,6 +117,7 @@ const Profile: React.FC = () => {
           }}
           className="mt-2 text-sm"
         />
+
         <button
           onClick={handleImageUpload}
           className="bg-indigo-600 text-white px-4 py-1 rounded mt-4 text-sm font-medium"

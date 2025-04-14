@@ -25,25 +25,20 @@ const DeviceList: React.FC = () => {
   const { user } = useAuth();
 
   useEffect(() => {
+    if (!user?.userId) return;
+
     const fetchDevices = async () => {
-      if (!user) return;
-      try {
-        const response = await fetch(
-          `${API_URL}/api/devices?userId=${user.userId}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setDevices(data);
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV !== "production") {
-          console.error("エラーが発生しました:", error);
-        }
+      const response = await fetch(
+        `${API_URL}/api/devices?userId=${user.userId}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setDevices(data);
       }
     };
 
     fetchDevices();
-  }, [user]);
+  }, [user?.userId]);
 
   const addDevice = async () => {
     if (!newDeviceName || !newDeviceImage) {
