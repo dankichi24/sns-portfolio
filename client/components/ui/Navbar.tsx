@@ -1,13 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useAuth } from "../lib/authContext";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/lib/authContext";
 import { useEffect } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const Navbar = () => {
   const { user, logout, login, isLoading } = useAuth();
-  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!user) {
@@ -38,12 +40,10 @@ const Navbar = () => {
     }
   }, [user, login]);
 
-  if (isLoading) {
-    return null;
-  }
+  if (isLoading) return null;
 
-  const isMypage = router.pathname === "/mypage";
-  const isUserDevicesPage = router.pathname.startsWith("/devices/");
+  const isMypage = pathname === "/mypage";
+  const isUserDevicesPage = pathname.startsWith("/devices/");
 
   return (
     <header className="w-full bg-indigo-900 text-white py-4 sticky top-0 z-50">

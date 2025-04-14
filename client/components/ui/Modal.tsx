@@ -1,3 +1,5 @@
+"use client";
+
 interface ModalProps {
   isModalOpen: boolean;
   selectedImage: string | null;

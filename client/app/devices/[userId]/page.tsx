@@ -1,19 +1,20 @@
-import { useRouter } from "next/router";
+"use client";
+
 import { useEffect, useState } from "react";
-import { Device } from "../../types";
+import { useParams } from "next/navigation";
+import { Device } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const UserDevices = () => {
-  const router = useRouter();
-  const { userId } = router.query;
+  const { userId } = useParams() as { userId: string };
 
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string>("");
 
   useEffect(() => {
-    if (!userId || typeof userId !== "string") return;
+    if (!userId) return;
 
     const fetchUserDevices = async () => {
       setLoading(true);

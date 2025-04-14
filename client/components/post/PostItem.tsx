@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { FiEdit } from "react-icons/fi";
 import { FaTrashAlt } from "react-icons/fa";
-import { Post } from "../types";
-import ImageWithCacheBusting from "./ImageWithCacheBusting";
+import { Post } from "@/types";
+import ImageWithCacheBusting from "@/components/ImageWithCacheBusting";
 
 interface PostItemProps {
   post: Post;
@@ -50,9 +50,8 @@ const PostItem: React.FC<PostItemProps> = ({
             <>
               <Link
                 href={{
-                  pathname: `/post/edit`,
+                  pathname: `/post/${post.id}/edit`,
                   query: {
-                    id: post.id,
                     returnUrl:
                       typeof window !== "undefined"
                         ? `${window.location.pathname}?activeTab=${activeTab}`

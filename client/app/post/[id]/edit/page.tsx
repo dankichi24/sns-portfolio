@@ -1,10 +1,15 @@
-import { useRouter } from "next/router";
+"use client";
+
 import { useEffect, useState } from "react";
-import apiClient from "../../lib/apiClient";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import apiClient from "@/lib/apiClient";
 
 const EditPost = () => {
+  const { id } = useParams();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl");
   const router = useRouter();
-  const { id, returnUrl } = router.query;
+
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
@@ -58,7 +63,7 @@ const EditPost = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      router.push((returnUrl as string) || "/home");
+      router.push(returnUrl || "/home");
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         console.error("Error updating post:", error);
@@ -67,7 +72,7 @@ const EditPost = () => {
   };
 
   const handleCancel = () => {
-    router.push((returnUrl as string) || "/home");
+    router.push(returnUrl || "/home");
   };
 
   if (isLoading) {
@@ -84,6 +89,7 @@ const EditPost = () => {
         <h2 className="text-4xl font-bold mb-8 text-center text-gray-700">
           Edit Post
         </h2>
+
         <div className="mb-6">
           <label className="block text-gray-600 font-medium mb-2 text-lg">
             本文
@@ -95,6 +101,7 @@ const EditPost = () => {
             placeholder="Edit your thoughts..."
           />
         </div>
+
         <div className="mb-6">
           <label className="block text-gray-600 font-medium mb-2 text-lg">
             画像の更新
@@ -106,9 +113,10 @@ const EditPost = () => {
             className="w-full p-2 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
         {currentImageUrl && !preview && (
           <img
-            src={`${currentImageUrl}?t=${Date.now()}`}
+            src={currentImageUrl}
             alt="Current post image"
             className="w-full h-auto rounded-lg shadow-md mb-6"
           />
@@ -121,6 +129,7 @@ const EditPost = () => {
             className="w-full h-auto rounded-lg shadow-md mb-6"
           />
         )}
+
         <div className="flex justify-between mt-8">
           <button
             onClick={handleCancel}

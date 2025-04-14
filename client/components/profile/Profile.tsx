@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useState } from "react";
-import { useAuth } from "../lib/authContext";
-import DeviceList from "./DeviceList";
-import ImageWithCacheBusting from "./ImageWithCacheBusting";
+import { useAuth } from "@/lib/authContext";
+import DeviceList from "@/components/profile/DeviceList";
+import ImageWithCacheBusting from "@/components/ImageWithCacheBusting";
 
 interface ProfileProps {
   username: string;

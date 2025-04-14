@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
-import apiClient from "../lib/apiClient";
-import PostItem from "../components/PostItem";
-import { Post } from "../types";
+import apiClient from "@/lib/apiClient";
+import PostItem from "@/components/post/PostItem";
+import { Post } from "@/types";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 

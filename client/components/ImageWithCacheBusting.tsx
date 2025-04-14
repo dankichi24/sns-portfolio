@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 interface ImageWithCacheBustingProps
@@ -13,7 +15,8 @@ const ImageWithCacheBusting: React.FC<ImageWithCacheBustingProps> = ({
   cacheBust = false,
   onClick,
 }) => {
-  const url = cacheBust ? `${src}?v=${Date.now()}` : src;
+  const isBlobUrl = src?.startsWith("blob:");
+  const url = cacheBust && src && !isBlobUrl ? `${src}?v=${Date.now()}` : src;
 
   return (
     <img

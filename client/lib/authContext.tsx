@@ -1,6 +1,8 @@
+"use client";
+
 import React, { createContext, useContext, useState, useEffect } from "react";
-import apiClient from "./apiClient";
-import { useRouter } from "next/router";
+import apiClient from "@/lib/apiClient";
+import { useRouter } from "next/navigation";
 
 export interface User {
   userId: number;

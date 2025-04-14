@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
-import { useAuth } from "../lib/authContext";
+import { useAuth } from "@/lib/authContext";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 

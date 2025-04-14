@@ -1,11 +1,13 @@
+"use client";
+
 import { useState } from "react";
-import apiClient from "../../lib/apiClient";
+import apiClient from "@/lib/apiClient";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useAuth } from "../../lib/authContext";
+import { useAuth } from "@/lib/authContext";
 
 interface ApiErrorResponse {
   error: string;
@@ -21,36 +23,27 @@ interface ApiSuccessResponse {
   };
 }
 
-const SignUp = () => {
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const { login } = useAuth();
   const router = useRouter();
+  const { login } = useAuth();
 
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const toggleConfirmPasswordVisibility = () =>
-    setShowConfirmPassword(!showConfirmPassword);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setError("パスワードが一致しません");
-      return;
-    }
-
     try {
       const response = await apiClient.post<ApiSuccessResponse>(
-        "/api/auth/register",
+        "/api/auth/login",
         {
-          username,
           email,
           password,
         }
@@ -64,9 +57,10 @@ const SignUp = () => {
       router.push("/home");
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
-        setError((err.response.data as ApiErrorResponse).error);
+        const apiError = err.response.data as ApiErrorResponse;
+        setError(apiError.error);
       } else {
-        setError("登録に失敗しました。再度お試しください。");
+        setError("ログインに失敗しました。再度お試しください。");
       }
 
       setSuccess(null);
@@ -76,24 +70,12 @@ const SignUp = () => {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-12 md:p-16 rounded shadow-md w-full max-w-2xl">
-        <h1 className="text-4xl font-bold text-center mb-8">新規登録</h1>
+        <h1 className="text-4xl font-bold text-center mb-8">ログイン</h1>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {success && <p className="text-green-500 mb-4">{success}</p>}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <label className="block text-gray-700 mb-2">ユーザー名</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="ユーザー名"
-              className="w-full px-4 py-3 border rounded"
-              required
-            />
-          </div>
-
           <div className="mb-6">
             <label className="block text-gray-700 mb-2">メールアドレス</label>
             <input
@@ -124,38 +106,18 @@ const SignUp = () => {
             </span>
           </div>
 
-          <div className="mb-6 relative">
-            <label className="block text-gray-700 mb-2">パスワード確認</label>
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="パスワード確認"
-              className="w-full px-4 py-3 border rounded"
-              required
-            />
-            <span
-              className="absolute right-4 top-11 cursor-pointer"
-              onClick={toggleConfirmPasswordVisibility}
-            >
-              <FontAwesomeIcon
-                icon={showConfirmPassword ? faEye : faEyeSlash}
-              />
-            </span>
-          </div>
-
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 transition duration-300"
           >
-            新規登録
+            ログイン
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <Link href="/auth/signin">
+        <div className="mt-6 flex justify-center">
+          <Link href="/auth/signup">
             <button className="py-2 px-4 font-semibold text-gray-700 rounded hover:bg-gray-200 transition duration-300">
-              ログインはこちら
+              新規登録はこちら
             </button>
           </Link>
         </div>
@@ -164,4 +126,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

@@ -1,25 +1,31 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { useAuth } from "../lib/authContext";
-import { useRouter } from "next/router";
-import ShareHistory from "../components/ShareHistory";
-import ShareFavorites from "../components/ShareFavorites";
-import Profile from "../components/Profile";
+import { useAuth } from "@/lib/authContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import ShareHistory from "@/components/profile/ShareHistory";
+import ShareFavorites from "@/components/profile/ShareFavorites";
+import Profile from "@/components/profile/Profile";
 
 const MyPage = () => {
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
-    if (router.query.activeTab) {
-      setActiveTab(router.query.activeTab as string);
-    }
-  }, [router.query.activeTab]);
+    const tab = searchParams.get("activeTab");
+    if (tab) setActiveTab(tab);
+  }, [searchParams]);
 
-  if (!user) {
-    router.push("/auth/signin");
-    return null;
-  }
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth/signin");
+    }
+  }, [user, router]);
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gray-100">

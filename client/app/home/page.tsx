@@ -1,12 +1,14 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import apiClient from "../lib/apiClient";
-import { useAuth } from "../lib/authContext";
-import { Post } from "../types";
-import PostItem from "../components/PostItem";
-import Modal from "../components/Modal";
+import apiClient from "@/lib/apiClient";
+import { useAuth } from "@/lib/authContext";
+import { Post } from "@/types";
+import PostItem from "@/components/post/PostItem";
+import Modal from "@/components/ui/Modal";
 
 const MySwal = withReactContent(Swal);
 

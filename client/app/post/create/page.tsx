@@ -1,6 +1,8 @@
+"use client";
+
 import { useState } from "react";
-import { useRouter } from "next/router";
-import apiClient from "../../lib/apiClient";
+import { useRouter } from "next/navigation";
+import apiClient from "@/lib/apiClient";
 
 const CreatePost = () => {
   const [content, setContent] = useState("");
