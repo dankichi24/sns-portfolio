@@ -1,23 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/lib/authContext";
 import DeviceList from "@/components/profile/DeviceList";
 import ImageWithCacheBusting from "@/components/ImageWithCacheBusting";
 
-interface ProfileProps {
-  username: string;
-}
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-const Profile: React.FC<ProfileProps> = ({ username }) => {
+const Profile: React.FC = () => {
   const { user, login } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUsername, setEditedUsername] = useState(username || "");
+  const [editedUsername, setEditedUsername] = useState(user?.username || "");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.username) {
+      setEditedUsername(user.username);
+    }
+  }, [user?.username]);
 
   const saveUsername = async () => {
     try {
@@ -41,9 +43,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       const data = await response.json();
       login(data.user);
 
-      if (typeof window !== "undefined") {
-        window.location.reload();
-      }
+      setIsEditing(false);
     } catch {
       alert("エラーが発生しました。");
     }
@@ -76,10 +76,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
 
       const data = await response.json();
       login(data.user);
-
-      if (typeof window !== "undefined") {
-        window.location.reload();
-      }
+      setPreviewUrl(null);
     } catch {
       alert("画像アップロード中にエラーが発生しました。");
     } finally {
@@ -133,7 +130,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
                 type="text"
                 value={editedUsername}
                 onChange={(e) => setEditedUsername(e.target.value)}
-                className="border rounded-md px-4 py-2 w-48 text-center text-lg font-semibold"
+                className="border rounded-md px-4 py-2 w-48 text-center text-2xl font-semibold"
                 placeholder="新しいユーザー名を入力"
               />
               <div className="flex space-x-3">
@@ -153,8 +150,8 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
             </div>
           ) : (
             <div className="flex flex-col items-center">
-              <span className="text-xl font-bold text-black mb-2">
-                {editedUsername}
+              <span className="text-2xl font-bold text-black mb-2">
+                {user?.username}
               </span>
               <button
                 onClick={() => setIsEditing(true)}

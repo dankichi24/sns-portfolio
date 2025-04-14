@@ -51,7 +51,7 @@ const MyPage = () => {
         </div>
 
         <div className="mt-6">
-          {activeTab === "profile" && <Profile username={user.username} />}
+          {activeTab === "profile" && <Profile />}
           {activeTab === "history" && (
             <ShareHistory userId={user.userId} active />
           )}

@@ -52,6 +52,12 @@ const updateUsername = async (req, res) => {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        image: true,
+      },
     });
 
     if (!existingUser) {
@@ -61,7 +67,12 @@ const updateUsername = async (req, res) => {
     if (existingUser.username === newUsername) {
       return res.status(200).json({
         message: "名前は既に設定されています。",
-        user: existingUser,
+        user: {
+          userId: existingUser.id,
+          username: existingUser.username,
+          email: existingUser.email,
+          image: existingUser.image,
+        },
       });
     }
 
@@ -72,7 +83,12 @@ const updateUsername = async (req, res) => {
 
     return res.status(200).json({
       message: "ユーザー名が更新されました。",
-      user: updatedUser,
+      user: {
+        userId: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        image: updatedUser.image,
+      },
     });
   } catch (error) {
     return res
