@@ -76,8 +76,7 @@ const Profile: React.FC = () => {
 
       const data = await response.json();
       login(data.user);
-
-      window.location.reload();
+      setPreviewUrl(data.user.image);
     } catch {
       alert("画像アップロード中にエラーが発生しました。");
     } finally {

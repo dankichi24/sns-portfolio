@@ -36,7 +36,12 @@ const uploadProfileImage = async (req, res) => {
 
     return res.status(200).json({
       message: "プロフィール画像がアップロードされました。",
-      user: updatedUser,
+      user: {
+        userId: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        image: updatedUser.image,
+      },
     });
   } catch (error) {
     return res
