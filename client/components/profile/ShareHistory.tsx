@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "@/lib/apiClient";
 import PostItem from "@/components/post/PostItem";
+import Modal from "@/components/ui/Modal";
 import { Post } from "@/types";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -18,6 +19,19 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [animateLike, setAnimateLike] = useState<number | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const openModal = (image: string) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
+  };
 
   const fetchMyPosts = async () => {
     setLoading(true);
@@ -104,13 +118,26 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
               userId={userId}
               confirmDeletePost={() => confirmDeletePost(post.id)}
               toggleLike={() => toggleLike(post.id)}
-              openModal={() => {}}
+              openModal={() =>
+                post.image &&
+                openModal(
+                  post.justUpdated
+                    ? `${post.image}?v=${Date.now()}`
+                    : post.image
+                )
+              }
               animateLike={animateLike}
               activeTab="history"
             />
           ))}
         </div>
       )}
+
+      <Modal
+        isModalOpen={isModalOpen}
+        selectedImage={selectedImage}
+        closeModal={closeModal}
+      />
     </div>
   );
 };

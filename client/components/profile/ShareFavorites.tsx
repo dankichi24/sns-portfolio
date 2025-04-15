@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "@/lib/apiClient";
 import PostItem from "@/components/post/PostItem";
+import Modal from "@/components/ui/Modal";
 import { Post } from "@/types";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -18,6 +19,19 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
   const [favoritePosts, setFavoritePosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [animateLike, setAnimateLike] = useState<number | null>(null);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const openModal = (image: string) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
+  };
 
   useEffect(() => {
     if (!active) return;
@@ -111,13 +125,19 @@ const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
               userId={userId}
               toggleLike={() => handleUnlike(post.id)}
               confirmDeletePost={() => confirmDeletePost(post.id)}
-              openModal={() => {}}
+              openModal={openModal}
               animateLike={animateLike}
               activeTab="favorites"
             />
           ))}
         </div>
       )}
+
+      <Modal
+        isModalOpen={isModalOpen}
+        selectedImage={selectedImage}
+        closeModal={closeModal}
+      />
     </div>
   );
 };
