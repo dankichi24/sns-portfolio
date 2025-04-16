@@ -50,26 +50,28 @@ const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   }, [active, userId]);
 
   const toggleLike = async (postId: number) => {
+    const prevPosts = [...myPosts];
+
+    setMyPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              liked: !post.liked,
+              likeCount: post.liked ? post.likeCount - 1 : post.likeCount + 1,
+            }
+          : post
+      )
+    );
+
+    setAnimateLike(postId);
+    setTimeout(() => setAnimateLike(null), 300);
+
     try {
-      setMyPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId ? { ...post, liked: false } : post
-        )
-      );
-
-      setAnimateLike(postId);
-
       await apiClient.post("/api/posts/like", { postId });
-
-      setTimeout(() => {
-        setMyPosts((prevPosts) =>
-          prevPosts.filter((post) => post.id !== postId)
-        );
-        setAnimateLike(null);
-      }, 300);
     } catch {
-      setAnimateLike(null);
-      MySwal.fire("エラー", "いいねの解除に失敗しました。", "error");
+      setMyPosts(prevPosts);
+      MySwal.fire("エラー", "いいねの処理に失敗しました。", "error");
     }
   };
 
