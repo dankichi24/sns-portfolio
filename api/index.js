@@ -38,12 +38,4 @@ app.use((req, res) => {
   res.status(404).json({ error: "ページが見つかりません" });
 });
 
-// ✅ ローカル環境のときだけ listen 起動
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`✅ Server running at http://localhost:${PORT}`);
-  });
-}
-
 module.exports = app;
