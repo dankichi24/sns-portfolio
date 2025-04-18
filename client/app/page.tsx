@@ -1,3 +1,9 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/authContext";
+
 export const metadata = {
   title: "Gaming Device Share | ゲーミングデバイス共有SNS",
   description:
@@ -5,6 +11,17 @@ export const metadata = {
 };
 
 export default function Home() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace("/home");
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <main className="flex-grow container px-4 py-8 sm:p-12 text-center bg-white shadow-md rounded-md mt-4 max-w-8xl">
