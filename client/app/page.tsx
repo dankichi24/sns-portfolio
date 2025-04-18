@@ -4,12 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/authContext";
 
-export const metadata = {
-  title: "Gaming Device Share | ゲーミングデバイス共有SNS",
-  description:
-    "おすすめのゲーミングデバイスを投稿・共有できるSNSアプリ。プロフィールで自分のデバイスを紹介！",
-};
-
 export default function Home() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
