@@ -27,22 +27,23 @@ const PostItem: React.FC<PostItemProps> = ({
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <ImageWithCacheBusting
-            src={
-              post.user.image
-                ? post.user.image
-                : process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE || ""
-            }
-            alt="User profile"
-            className="w-8 h-8 rounded-full object-cover mr-2"
-            cacheBust={false}
-          />
-
           <Link
             href={`/devices/${post.user.userId}`}
-            className="text-xl font-semibold text-blue-600 hover:underline"
+            className="flex items-center group"
           >
-            {post.user.username}
+            <ImageWithCacheBusting
+              src={
+                post.user.image
+                  ? post.user.image
+                  : process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE || ""
+              }
+              alt="User profile"
+              className="w-8 h-8 rounded-full object-cover mr-2"
+              cacheBust={false}
+            />
+            <span className="text-xl font-semibold text-blue-600 group-hover:text-blue-800 transition">
+              {post.user.username}
+            </span>
           </Link>
         </div>
         <div className="flex items-center">
