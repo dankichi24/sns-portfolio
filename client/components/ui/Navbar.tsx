@@ -55,7 +55,7 @@ const Navbar = () => {
           Gaming Device Share
         </Link>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-6 flex-shrink-0">
           {user ? (
             <>
               <Link
