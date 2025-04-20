@@ -58,7 +58,10 @@ const Navbar = () => {
         <div className="flex items-center gap-2 flex-shrink-0">
           {user ? (
             <>
-              <span className="flex items-center space-x-2">
+              <Link
+                href="/mypage"
+                className="flex items-center space-x-2 hover:underline hover:text-gray-200 transition"
+              >
                 <img
                   src={
                     user?.image
@@ -73,13 +76,15 @@ const Navbar = () => {
                 <span className="text-sm font-semibold">
                   {user.username}さん
                 </span>
-              </span>
+              </Link>
+
               <Link
                 href={isMypage || isUserDevicesPage ? "/home" : "/mypage"}
-                className="bg-white text-indigo-900 px-3 py-1 sm:px-4 sm:py-2 rounded font-bold hover:bg-gray-200 transition"
+                className="hidden"
               >
                 {isMypage || isUserDevicesPage ? "HOME" : "マイページ"}
               </Link>
+
               <button
                 onClick={logout}
                 className="bg-white text-indigo-900 px-3 py-1 sm:px-4 sm:py-2 rounded font-bold hover:bg-gray-200 transition"
