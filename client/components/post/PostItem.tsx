@@ -98,7 +98,7 @@ const PostItem: React.FC<PostItemProps> = ({
       <div className="flex justify-end items-center mt-4">
         <button
           onClick={() => toggleLike(post.id)}
-          className={`mr-2 text-xl ${
+          className={`flex items-center text-xl ${
             post.liked ? "text-yellow-500" : "text-gray-500"
           } ${animateLike === post.id ? "animate-pop" : ""}`}
           style={{
@@ -108,8 +108,10 @@ const PostItem: React.FC<PostItemProps> = ({
           }}
         >
           {post.liked ? "★" : "☆"}
+          <span className="ml-1 text-gray-600 text-lg">
+            {post.likeCount} nice!
+          </span>
         </button>
-        <span className="text-gray-600 text-lg">{post.likeCount} nice!</span>
       </div>
     </div>
   );
