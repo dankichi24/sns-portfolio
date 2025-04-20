@@ -77,10 +77,14 @@ const Profile: React.FC = () => {
       const data = await response.json();
       login(data.user);
       setPreviewUrl(data.user.image);
+      setSelectedImage(null);
     } catch {
       alert("画像アップロード中にエラーが発生しました。");
     } finally {
       setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
