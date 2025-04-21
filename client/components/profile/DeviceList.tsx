@@ -41,11 +41,6 @@ const DeviceList: React.FC = () => {
   }, [user?.userId]);
 
   const addDevice = async () => {
-    if (!newDeviceName || !newDeviceImage) {
-      alert("デバイス名と画像を入力してください。");
-      return;
-    }
-
     if (!user) {
       alert("ログインしていません。");
       return;
@@ -53,7 +48,9 @@ const DeviceList: React.FC = () => {
 
     const formData = new FormData();
     formData.append("name", newDeviceName);
-    formData.append("image", newDeviceImage);
+    if (newDeviceImage) {
+      formData.append("image", newDeviceImage);
+    }
     formData.append("comment", newDeviceComment || "");
     formData.append("userId", String(user.userId));
 
@@ -160,6 +157,7 @@ const DeviceList: React.FC = () => {
                 onChange={(e) => setNewDeviceName(e.target.value)}
                 placeholder="デバイス名を入力"
                 className="border rounded-md px-4 py-2 w-full mt-1 text-sm"
+                required
               />
             </div>
             <div className="w-full">
@@ -179,7 +177,7 @@ const DeviceList: React.FC = () => {
               />
             </div>
 
-            <div>
+            <div className="w-full text-center">
               <label
                 htmlFor="device-image"
                 className="block text-sm font-medium text-gray-700"
@@ -205,7 +203,7 @@ const DeviceList: React.FC = () => {
                     setPreviewUrl(null);
                   }
                 }}
-                className="block w-full text-sm mt-1"
+                className="block text-sm mt-1 mx-auto"
               />
             </div>
 
@@ -234,9 +232,9 @@ const DeviceList: React.FC = () => {
               key={device.id}
               className="border rounded-lg p-6 bg-white shadow-lg flex flex-col items-center w-64 h-[380px]"
             >
-              <div className="w-full aspect-[5/4] bg-white rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+              <div className="w-full aspect-[1] bg-white rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                 <img
-                  src={device.image}
+                  src={device.image || "/no-image.png"}
                   alt={device.name}
                   className="object-contain max-w-full max-h-full"
                 />
@@ -245,7 +243,6 @@ const DeviceList: React.FC = () => {
                 {device.name}
               </span>
               <div className="mt-2 w-full h-20 overflow-y-auto px-1">
-                {" "}
                 <p className="text-gray-600 text-center text-sm break-words whitespace-pre-wrap">
                   {device.comment || ""}
                 </p>

@@ -6,30 +6,32 @@ const addDevice = async (req, res) => {
   const { name, userId, comment } = req.body;
   const file = req.file;
 
-  if (!name || !file || !userId) {
-    return res
-      .status(400)
-      .json({ message: "名前、画像、ユーザーIDが必要です。" });
+  if (!name || !userId) {
+    return res.status(400).json({ message: "名前とユーザーIDが必要です。" });
   }
 
   try {
-    const fileExt = file.originalname.split(".").pop();
-    const fileName = `device-${userId}-${Date.now()}.${fileExt}`;
+    let imagePath = "/no-image.png";
 
-    const { error: uploadError } = await supabase.storage
-      .from(process.env.SUPABASE_BUCKET)
-      .upload(fileName, file.buffer, {
-        contentType: file.mimetype,
-        upsert: true,
-      });
+    if (file) {
+      const fileExt = file.originalname.split(".").pop();
+      const fileName = `device-${userId}-${Date.now()}.${fileExt}`;
 
-    if (uploadError) {
-      return res
-        .status(500)
-        .json({ message: "画像のアップロードに失敗しました。" });
+      const { error: uploadError } = await supabase.storage
+        .from(process.env.SUPABASE_BUCKET)
+        .upload(fileName, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        return res
+          .status(500)
+          .json({ message: "画像のアップロードに失敗しました。" });
+      }
+
+      imagePath = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${fileName}`;
     }
-
-    const imagePath = `${process.env.SUPABASE_URL}/storage/v1/object/public/${process.env.SUPABASE_BUCKET}/${fileName}`;
 
     const newDevice = await prisma.device.create({
       data: {
