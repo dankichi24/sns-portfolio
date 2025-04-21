@@ -52,24 +52,28 @@ const UserDevices = () => {
         {username} さんの使用デバイス一覧
       </h1>
       {devices.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-center my-10">
           {devices.map((device) => (
             <div
               key={device.id}
               className="border rounded-lg p-6 bg-white shadow-lg flex flex-col items-center"
             >
-              <img
-                src={device.image}
-                alt={device.name}
-                className="w-full h-48 rounded-lg object-cover mb-4"
-              />
+              <div className="w-full aspect-[5/4] bg-white rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                <img
+                  src={device.image}
+                  alt={device.name}
+                  className="object-contain max-w-full max-h-full"
+                />
+              </div>
               <span className="text-xl font-bold text-center">
                 {device.name}
               </span>
               {device.comment && (
-                <p className="text-gray-600 text-center mt-2">
-                  {device.comment}
-                </p>
+                <div className="mt-2 w-full h-24 overflow-y-auto">
+                  <p className="text-gray-600 text-center text-sm break-words whitespace-pre-wrap px-1">
+                    {device.comment}
+                  </p>
+                </div>
               )}
             </div>
           ))}

@@ -146,7 +146,7 @@ const DeviceList: React.FC = () => {
             }}
             className="flex flex-col space-y-4 items-center"
           >
-            <div>
+            <div className="w-full">
               <label
                 htmlFor="device-name"
                 className="block text-sm font-medium text-gray-700"
@@ -162,7 +162,7 @@ const DeviceList: React.FC = () => {
                 className="border rounded-md px-4 py-2 w-full mt-1 text-sm"
               />
             </div>
-            <div>
+            <div className="w-full">
               <label
                 htmlFor="device-comment"
                 className="block text-sm font-medium text-gray-700"
@@ -174,9 +174,11 @@ const DeviceList: React.FC = () => {
                 value={newDeviceComment}
                 onChange={(e) => setNewDeviceComment(e.target.value)}
                 placeholder="コメントを入力"
-                className="border rounded-md px-4 py-2 w-full mt-1 text-sm"
+                className="border rounded-md px-4 py-2 w-full mt-1 text-sm resize-y"
+                rows={3}
               />
             </div>
+
             <div>
               <label
                 htmlFor="device-image"
@@ -230,21 +232,24 @@ const DeviceList: React.FC = () => {
           {devices.map((device) => (
             <div
               key={device.id}
-              className="border rounded-lg p-6 bg-white shadow-lg flex flex-col items-center w-64"
+              className="border rounded-lg p-6 bg-white shadow-lg flex flex-col items-center w-64 h-[380px]"
             >
-              <img
-                src={device.image}
-                alt={device.name}
-                className="w-full h-48 rounded-lg object-cover mb-4"
-              />
+              <div className="w-full aspect-[5/4] bg-white rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                <img
+                  src={device.image}
+                  alt={device.name}
+                  className="object-contain max-w-full max-h-full"
+                />
+              </div>
               <span className="text-xl font-bold text-center">
                 {device.name}
               </span>
-              {device.comment && (
-                <p className="text-gray-600 text-center mt-2 max-h-16 overflow-hidden text-ellipsis whitespace-pre-line break-words">
-                  {device.comment}
+              <div className="mt-2 w-full h-20 overflow-y-auto px-1">
+                {" "}
+                <p className="text-gray-600 text-center text-sm break-words whitespace-pre-wrap">
+                  {device.comment || ""}
                 </p>
-              )}
+              </div>
               <div className="flex-grow" />
               <button
                 onClick={() => confirmDeleteDevice(device.id)}
