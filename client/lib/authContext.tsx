@@ -43,7 +43,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }
         })
         .catch((error) => {
-          if (process.env.NODE_ENV !== "production") {
+          if (error.response?.status === 403) {
+            console.warn("未認証: /auth/me アクセス拒否（403）");
+          } else {
             console.error("認証情報取得に失敗しました:", error);
           }
           localStorage.removeItem("authToken");

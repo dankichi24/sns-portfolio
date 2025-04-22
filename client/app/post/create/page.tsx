@@ -89,8 +89,7 @@ const CreatePost = () => {
               <img
                 src={preview}
                 alt="Preview"
-                className="w-full h-auto rounded-lg shadow-md"
-                style={{ maxHeight: "300px", objectFit: "cover" }}
+                className="w-full h-auto rounded-lg shadow-md mb-6"
               />
             </div>
           )}
