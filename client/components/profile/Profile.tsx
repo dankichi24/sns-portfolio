@@ -14,6 +14,7 @@ const Profile: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -23,6 +24,11 @@ const Profile: React.FC = () => {
   }, [user?.username]);
 
   const saveUsername = async () => {
+    if (editedUsername.length > 20) {
+      setErrorMessage("ユーザー名は20文字以内で入力してください。");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken");
       if (!user || !token) throw new Error("ユーザー情報がありません");
@@ -44,6 +50,7 @@ const Profile: React.FC = () => {
       const data = await response.json();
       login(data.user);
       setIsEditing(false);
+      setErrorMessage(null);
     } catch {
       alert("エラーが発生しました。");
     }
@@ -135,10 +142,20 @@ const Profile: React.FC = () => {
               <input
                 type="text"
                 value={editedUsername}
-                onChange={(e) => setEditedUsername(e.target.value)}
+                onChange={(e) => {
+                  setEditedUsername(e.target.value);
+                  if (e.target.value.length <= 20) {
+                    setErrorMessage(null);
+                  }
+                }}
                 className="border rounded-md px-4 py-2 w-48 text-center text-2xl font-semibold"
                 placeholder="新しいユーザー名を入力"
               />
+
+              {errorMessage && (
+                <p className="text-red-500 text-sm">{errorMessage}</p>
+              )}
+
               <div className="flex space-x-3">
                 <button
                   onClick={saveUsername}
@@ -147,7 +164,10 @@ const Profile: React.FC = () => {
                   保存
                 </button>
                 <button
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setErrorMessage(null);
+                  }}
                   className="text-gray-500 underline text-base font-semibold"
                 >
                   キャンセル

@@ -96,10 +96,17 @@ const EditPost = () => {
           </label>
           <textarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value.length <= 280) {
+                setContent(e.target.value);
+              }
+            }}
             className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Edit your thoughts..."
           />
+          <p className="text-sm text-gray-500 text-right">
+            {content.length}/280
+          </p>
         </div>
 
         <div className="mb-6">

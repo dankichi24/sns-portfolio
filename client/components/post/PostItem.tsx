@@ -78,8 +78,10 @@ const PostItem: React.FC<PostItemProps> = ({
         </div>
       </div>
 
-      <div className="text-gray-700 mt-5 mb-4 leading-relaxed whitespace-pre-wrap pl-10">
-        {post.content}
+      <div className="text-gray-700 mt-5 mb-4 leading-relaxed whitespace-pre-wrap break-words pl-10 pr-2">
+        {post.content.length > 280
+          ? `${post.content.slice(0, 280)}...`
+          : post.content}
       </div>
       {post.image && (
         <ImageWithCacheBusting

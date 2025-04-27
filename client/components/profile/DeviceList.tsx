@@ -21,6 +21,7 @@ const DeviceList: React.FC = () => {
   const [newDeviceImage, setNewDeviceImage] = useState<File | null>(null);
   const [newDeviceComment, setNewDeviceComment] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
 
@@ -46,6 +47,11 @@ const DeviceList: React.FC = () => {
       return;
     }
 
+    if (newDeviceName.length > 30) {
+      setErrorMessage("デバイス名は30文字以内で入力してください。");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", newDeviceName);
     if (newDeviceImage) {
@@ -67,6 +73,7 @@ const DeviceList: React.FC = () => {
         setNewDeviceImage(null);
         setNewDeviceComment("");
         setPreviewUrl(null);
+        setErrorMessage(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -154,11 +161,19 @@ const DeviceList: React.FC = () => {
                 id="device-name"
                 type="text"
                 value={newDeviceName}
-                onChange={(e) => setNewDeviceName(e.target.value)}
+                onChange={(e) => {
+                  setNewDeviceName(e.target.value);
+                  if (e.target.value.length <= 30) {
+                    setErrorMessage(null);
+                  }
+                }}
                 placeholder="デバイス名を入力"
                 className="border rounded-md px-4 py-2 w-full mt-1 text-sm"
                 required
               />
+              {errorMessage && (
+                <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+              )}
             </div>
             <div className="w-full">
               <label
