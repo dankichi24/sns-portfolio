@@ -15,6 +15,7 @@ const EditPost = () => {
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [preview, setPreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -51,6 +52,8 @@ const EditPost = () => {
   };
 
   const handleSave = async () => {
+    setIsSubmitting(true);
+
     try {
       const formData = new FormData();
       formData.append("content", content);
@@ -68,6 +71,8 @@ const EditPost = () => {
       if (process.env.NODE_ENV !== "production") {
         console.error("Error updating post:", error);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -141,14 +146,18 @@ const EditPost = () => {
           <button
             onClick={handleCancel}
             className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition shadow-md"
+            disabled={isSubmitting}
           >
             キャンセル
           </button>
           <button
             onClick={handleSave}
-            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition shadow-md"
+            className={`${
+              isSubmitting ? "bg-blue-300" : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-6 py-3 rounded-lg transition shadow-md`}
+            disabled={isSubmitting}
           >
-            保存
+            {isSubmitting ? "保存中..." : "保存"}
           </button>
         </div>
       </div>

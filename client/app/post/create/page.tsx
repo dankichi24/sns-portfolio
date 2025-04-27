@@ -8,6 +8,7 @@ const CreatePost = () => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,6 +28,7 @@ const CreatePost = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const formData = new FormData();
     formData.append("content", content);
@@ -50,6 +52,8 @@ const CreatePost = () => {
       if (process.env.NODE_ENV !== "production") {
         console.error("Error creating post:", error);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -79,6 +83,7 @@ const CreatePost = () => {
               {content.length}/280
             </p>
           </div>
+
           <div className="mb-6">
             <label className="block text-gray-600 font-medium mb-2 text-lg">
               画像
@@ -105,15 +110,19 @@ const CreatePost = () => {
             <button
               type="button"
               onClick={() => router.push("/home")}
+              disabled={isSubmitting}
               className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition shadow-md"
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition shadow-md"
+              disabled={isSubmitting}
+              className={`${
+                isSubmitting ? "bg-blue-300" : "bg-blue-500 hover:bg-blue-600"
+              } text-white px-6 py-3 rounded-lg transition shadow-md`}
             >
-              Shareする
+              {isSubmitting ? "投稿中..." : "投稿する"}
             </button>
           </div>
         </form>
