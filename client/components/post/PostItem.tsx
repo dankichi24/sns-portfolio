@@ -25,11 +25,11 @@ const PostItem: React.FC<PostItemProps> = ({
 }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 transition-shadow duration-300 hover:shadow-xl">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
+      <div className="flex justify-between items-center w-full">
+        <div className="flex items-center min-w-0">
           <Link
             href={`/devices/${post.user.userId}`}
-            className="flex items-center group"
+            className="flex items-center group min-w-0"
           >
             <ImageWithCacheBusting
               src={
@@ -38,15 +38,22 @@ const PostItem: React.FC<PostItemProps> = ({
                   : process.env.NEXT_PUBLIC_SUPABASE_DEFAULT_IMAGE || ""
               }
               alt="User profile"
-              className="w-8 h-8 rounded-full object-cover mr-2"
+              className="w-8 h-8 rounded-full object-cover mr-2 shrink-0"
               cacheBust={false}
             />
-            <span className="text-xl font-semibold text-blue-600 group-hover:text-blue-800 transition">
+            <span
+              className={`text-xl font-semibold text-blue-600 group-hover:text-blue-800 transition ${
+                post.user.userId === userId
+                  ? "inline-block max-w-[6em] overflow-hidden text-ellipsis whitespace-nowrap align-middle"
+                  : "whitespace-nowrap"
+              }`}
+            >
               {post.user.username}
             </span>
           </Link>
         </div>
-        <div className="flex items-center">
+
+        <div className="flex items-center space-x-2">
           {post.user.userId === userId && (
             <>
               <Link
@@ -60,19 +67,19 @@ const PostItem: React.FC<PostItemProps> = ({
                   },
                 }}
               >
-                <button className="flex items-center text-base text-blue-500 hover:text-blue-700 mr-4 focus:outline-none">
-                  <FiEdit className="mr-1" size={17} />
+                <button className="text-blue-500 hover:text-blue-700 focus:outline-none flex items-center justify-center">
+                  <FiEdit size={16} />
                 </button>
               </Link>
               <button
                 onClick={() => confirmDeletePost(post.id)}
-                className="flex items-center text-base text-red-500 hover:text-red-700 mr-4 focus:outline-none"
+                className="text-red-500 hover:text-red-700 focus:outline-none flex items-center justify-center"
               >
-                <FaTrashAlt className="mr-1" size={17} />
+                <FaTrashAlt size={16} />
               </button>
             </>
           )}
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 whitespace-nowrap leading-none">
             {new Date(post.createdAt).toLocaleString()}
           </span>
         </div>
