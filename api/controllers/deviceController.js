@@ -1,7 +1,20 @@
 const prisma = require("../lib/prisma");
 const supabase = require("../lib/supabase");
 
-// デバイスの追加
+/**
+ * デバイスを新規追加するコントローラー
+ *
+ * @async
+ * @function addDevice
+ * @param {import("express").Request} req - Expressのリクエストオブジェクト
+ * @param {import("express").Response} res - Expressのレスポンスオブジェクト
+ * @returns {Promise<void>}
+ *
+ * @description
+ * リクエストボディから name, userId, comment を受け取り、
+ * オプションで画像ファイルをSupabase Storageにアップロードしてデバイス情報をDBに保存する。
+ * 成功時は作成したデバイス情報を返す。
+ */
 const addDevice = async (req, res) => {
   const { name, userId, comment } = req.body;
   const file = req.file;
@@ -50,7 +63,18 @@ const addDevice = async (req, res) => {
   }
 };
 
-// デバイス一覧の取得
+/**
+ * ユーザーのデバイス一覧を取得するコントローラー
+ *
+ * @async
+ * @function getDevices
+ * @param {import("express").Request} req - Expressのリクエストオブジェクト
+ * @param {import("express").Response} res - Expressのレスポンスオブジェクト
+ * @returns {Promise<void>}
+ *
+ * @description
+ * クエリパラメータ userId で指定されたユーザーのデバイス一覧を取得し、配列で返す。
+ */
 const getDevices = async (req, res) => {
   const userId = req.query.userId;
 
@@ -70,7 +94,19 @@ const getDevices = async (req, res) => {
   }
 };
 
-// デバイスの削除
+/**
+ * デバイスを削除するコントローラー
+ *
+ * @async
+ * @function deleteDevice
+ * @param {import("express").Request} req - Expressのリクエストオブジェクト
+ * @param {import("express").Response} res - Expressのレスポンスオブジェクト
+ * @returns {Promise<void>}
+ *
+ * @description
+ * パラメータ deviceId で指定されたデバイスを削除する。
+ * 削除成功時はメッセージを返す。
+ */
 const deleteDevice = async (req, res) => {
   const deviceId = parseInt(req.params.deviceId, 10);
 

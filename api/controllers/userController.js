@@ -1,7 +1,17 @@
 const prisma = require("../lib/prisma");
 const supabase = require("../lib/supabase");
 
-// プロフィール画像アップロード処理
+/**
+ * プロフィール画像アップロードコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（body: userId, file: 画像ファイル）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} アップロード結果・更新後のユーザー情報をJSONで返す
+ * @description
+ * 指定ユーザーIDのプロフィール画像をSupabase Storageにアップロードし、DBのユーザー画像URLを更新する。
+ * 成功時は新しい画像URLを含むユーザー情報を返す。
+ */
 const uploadProfileImage = async (req, res) => {
   const userId = parseInt(req.body.userId, 10);
   const file = req.file;
@@ -50,7 +60,17 @@ const uploadProfileImage = async (req, res) => {
   }
 };
 
-// ユーザー名更新処理
+/**
+ * ユーザー名更新コントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（body: userId, newUsername）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 更新後のユーザー情報をJSONで返す
+ * @description
+ * 指定ユーザーIDのユーザー名を変更する。同じ名前の場合は更新せず、そのまま返す。
+ * 成功時は新しいユーザー情報を返す。
+ */
 const updateUsername = async (req, res) => {
   const { userId, newUsername } = req.body;
 
@@ -102,7 +122,16 @@ const updateUsername = async (req, res) => {
   }
 };
 
-// ユーザー情報取得を処理
+/**
+ * ユーザー情報取得コントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（params: userId）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 指定ユーザーの情報をJSONで返す
+ * @description
+ * 指定ユーザーIDのユーザー情報（ID, ユーザー名, 画像）を返す。ユーザーが見つからない場合は404を返す。
+ */
 const getUserById = async (req, res) => {
   const userId = parseInt(req.params.userId, 10);
 

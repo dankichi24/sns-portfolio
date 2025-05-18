@@ -1,3 +1,16 @@
+/**
+ * 認証関連のルーティング定義
+ *
+ * @module routes/auth
+ * @description
+ * 新規ユーザー登録、ログイン、認証済みユーザー情報取得のエンドポイントを提供する。
+ * JWT認証ミドルウェア（authenticateToken）を使用し、/meエンドポイントの認可を制御する。
+ *
+ * - POST /register : 新規ユーザー登録
+ * - POST /login    : ログイン（JWTトークン発行）
+ * - GET  /me       : 認証済みユーザー情報取得（要認証）
+ */
+
 const express = require("express");
 const router = express.Router();
 const {

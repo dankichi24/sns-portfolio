@@ -4,7 +4,18 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// 新規ユーザー登録コントローラー
+/**
+ * 新規ユーザー登録コントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（bodyにusername, email, passwordを含む）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} ユーザー作成結果のJSONを返す（成功時: 201, 失敗時: エラーコード）
+ * @description
+ * クライアントから送信されたユーザー情報を受け取り、
+ * メール重複をチェックし、パスワードをハッシュ化して保存する。
+ * 成功時はJWTトークンとユーザー情報を返す。
+ */
 const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -52,7 +63,18 @@ const registerUser = async (req, res) => {
   }
 };
 
-// ユーザーログインコントローラー
+/**
+ * ユーザーログインコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（bodyにemail, passwordを含む）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} ログイン結果のJSONを返す
+ * @description
+ * メールアドレスとパスワードで認証し、
+ * 成功時はJWTトークンとユーザー情報を返す。
+ * 認証失敗時は401エラーを返す。
+ */
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -97,7 +119,17 @@ const loginUser = async (req, res) => {
   }
 };
 
-// 認証されたユーザーの情報を取得するコントローラ
+/**
+ * 認証済みユーザー情報取得コントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（req.user.userIdにユーザーIDが格納されている必要あり）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} ユーザー情報のJSONを返す
+ * @description
+ * 認証済みユーザーのIDからユーザー情報を取得し返す。
+ * 見つからない場合は404を返す。
+ */
 const getMe = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({

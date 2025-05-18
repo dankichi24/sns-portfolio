@@ -1,7 +1,17 @@
 const prisma = require("../lib/prisma");
 const supabase = require("../lib/supabase");
 
-// 新規投稿を作成する
+/**
+ * 新規投稿を作成するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（body: content, file: 画像, req.user.userId）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 投稿作成結果のJSONを返す（成功時: 201, 失敗時: エラーコード）
+ * @description
+ * 投稿内容と画像ファイルを受け取り、Supabase Storageに画像をアップロードし、DBに投稿情報を保存する。
+ * 成功時は作成された投稿データを返す。
+ */
 const createPost = async (req, res) => {
   const { content } = req.body;
   const file = req.file;
@@ -49,7 +59,16 @@ const createPost = async (req, res) => {
   }
 };
 
-// 投稿の一覧を取得する関数
+/**
+ * 投稿一覧を取得するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（req.user.userIdを利用）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 投稿一覧（配列）のJSONを返す
+ * @description
+ * 全ユーザーの投稿一覧と、各投稿のいいね状態・いいね数・ユーザー情報を含めて返す。
+ */
 const getPosts = async (req, res) => {
   const userId = req.user.userId;
 
@@ -79,6 +98,16 @@ const getPosts = async (req, res) => {
   }
 };
 
+/**
+ * いいねをトグル（付与/解除）するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（body: postId, req.user.userId）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} トグル結果（liked: true/false）を返す
+ * @description
+ * 指定投稿に対する「いいね」状態を切り替え、結果を返す。
+ */
 const toggleLike = async (req, res) => {
   const { postId } = req.body;
   const userId = req.user.userId;
@@ -102,7 +131,16 @@ const toggleLike = async (req, res) => {
   }
 };
 
-// 投稿を編集する関数
+/**
+ * 投稿を編集するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（params: postId, body: content, file: 画像, req.user.userId）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 編集結果（更新後の投稿）を返す
+ * @description
+ * 指定IDの投稿の内容や画像を変更する。ユーザー本人のみ編集可能。
+ */
 const editPost = async (req, res) => {
   const { postId } = req.params;
   const { content } = req.body;
@@ -159,7 +197,16 @@ const editPost = async (req, res) => {
   }
 };
 
-// 投稿を削除する関数
+/**
+ * 投稿を削除するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（params: postId, req.user.userId）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 削除結果のメッセージを返す
+ * @description
+ * 指定IDの投稿を削除する。ユーザー本人のみ削除可能。
+ */
 const deletePost = async (req, res) => {
   const { postId } = req.params;
   const userId = req.user.userId;
@@ -189,6 +236,16 @@ const deletePost = async (req, res) => {
   }
 };
 
+/**
+ * 投稿詳細をID指定で取得するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（params: id）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 投稿詳細データを返す
+ * @description
+ * 投稿IDで詳細情報（ユーザー・いいね情報含む）を取得する。
+ */
 const getPostById = async (req, res) => {
   const { id } = req.params;
 
@@ -211,7 +268,16 @@ const getPostById = async (req, res) => {
   }
 };
 
-// 自分の投稿を取得する関数
+/**
+ * 自分の投稿一覧を取得するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（req.user.userId）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} 自分の投稿一覧を返す
+ * @description
+ * ログインユーザー自身の投稿一覧を返す。いいね状態・ユーザー情報も含まれる。
+ */
 const getMyPosts = async (req, res) => {
   const userId = req.user.userId;
 
@@ -242,7 +308,16 @@ const getMyPosts = async (req, res) => {
   }
 };
 
-// 自分がお気に入りした投稿を取得する関数
+/**
+ * お気に入りした投稿一覧を取得するコントローラー
+ *
+ * @async
+ * @param {import("express").Request} req - リクエストオブジェクト（req.user.userId）
+ * @param {import("express").Response} res - レスポンスオブジェクト
+ * @returns {Promise<void>} お気に入り投稿の一覧を返す
+ * @description
+ * ログインユーザーが「いいね」した投稿のみを一覧で返す。
+ */
 const getFavoritePosts = async (req, res) => {
   const userId = req.user.userId;
   try {

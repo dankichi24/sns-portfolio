@@ -1,3 +1,22 @@
+/**
+ * 投稿管理用ルーティング定義
+ *
+ * @module routes/post
+ * @description
+ * 投稿（記事）の作成・取得・編集・削除・いいね等を扱うAPIエンドポイントを提供する。
+ * 各エンドポイントはJWT認証（authenticateToken）が必要。
+ * 画像アップロードにはmulterのmemoryStorageを利用。
+ *
+ * - POST   /             : 新規投稿（画像アップロード対応）
+ * - GET    /             : 投稿一覧取得
+ * - GET    /my-posts     : 自分の投稿一覧取得
+ * - GET    /favorites    : 自分がお気に入りした投稿一覧取得
+ * - GET    /:id          : 投稿詳細取得
+ * - POST   /like         : いいねのトグル
+ * - PUT    /:postId      : 投稿の編集（画像アップロード対応）
+ * - DELETE /:postId      : 投稿の削除
+ */
+
 const express = require("express");
 const router = express.Router();
 const postController = require("../controllers/postController");
