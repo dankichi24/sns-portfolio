@@ -1,3 +1,20 @@
+/**
+ * Expressアプリケーションのエントリーポイント
+ *
+ * @module app
+ * @description
+ * 各種ルーティングの統合、CORS設定、JSONリクエストボディのパース、
+ * および「404」ハンドリング等を含むAPIサーバーのメイン初期化ファイル。
+ *
+ * - /api/auth    : 認証系ルート
+ * - /api/posts   : 投稿関連ルート
+ * - /api/users   : ユーザー関連ルート
+ * - /api/devices : デバイス関連ルート
+ *
+ * ローカル開発時のみサーバーをlisten起動し、本番デプロイ時は外部から起動される前提。
+ * CORSはフロントエンドURLで許可制御している。
+ */
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
