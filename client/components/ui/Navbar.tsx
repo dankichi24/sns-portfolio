@@ -7,6 +7,15 @@ import { useEffect } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+/**
+ * ナビゲーションバー（ヘッダー）のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element|null} ヘッダーUI（ローディング時はnull）
+ * @description
+ * 認証状態に応じて、アプリ名・ユーザー名・プロフィール画像・ログイン/新規登録/ログアウトボタンを表示。
+ * ページ遷移やプロフィール画像キャッシュバスターも実装済み。未認証時はログイン・新規登録を案内する。
+ */
 const Navbar = () => {
   const { user, logout, login, isLoading } = useAuth();
   const pathname = usePathname();

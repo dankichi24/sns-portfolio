@@ -12,6 +12,16 @@ import Modal from "@/components/ui/Modal";
 
 const MySwal = withReactContent(Swal);
 
+/**
+ * 投稿一覧（Share List）画面のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} 投稿一覧ページのUI
+ * @description
+ * 投稿データをAPIから取得し、リスト表示・いいね・削除・画像モーダルなどの機能を提供。
+ * 各投稿には「いいね」「削除」「画像拡大」などの操作が可能。
+ * 状態管理やモーダル、楽観的UI更新、API連携なども実装。
+ */
 const PostListClient = () => {
   const { user, isLoading } = useAuth();
   const userId = !isLoading && user ? user.userId : null;

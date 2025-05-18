@@ -6,6 +6,15 @@ import { Device } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+/**
+ * 他ユーザーの使用デバイス一覧を表示するクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} デバイス一覧のUI
+ * @description
+ * URLパラメータのuserIdからAPI経由で対象ユーザー情報とそのデバイス一覧を取得し表示。
+ * デバイスがない場合はメッセージを表示する。ローディング表示やエラーハンドリングも実装。
+ */
 const UserDevices = () => {
   const { userId } = useParams() as { userId: string };
 

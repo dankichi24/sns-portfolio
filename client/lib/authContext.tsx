@@ -1,3 +1,14 @@
+/**
+ * 認証状態管理用のReact Contextとカスタムフック
+ *
+ * @module AuthContext
+ * @description
+ * - グローバルな認証ユーザー情報（user）、ログイン/ログアウト、ローディング状態、ユーザー情報更新を提供。
+ * - `AuthProvider`でツリーをラップし、`useAuth`フックでどこでも認証情報にアクセスできる。
+ * - ログイン時はtokenをlocalStorage保存し、自動でAPIからユーザー情報を取得する。
+ * - ログアウト時は認証情報をクリアしてトップページにリダイレクト。
+ */
+
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";

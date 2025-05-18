@@ -4,6 +4,16 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/authContext";
 
+/**
+ * トップページ（アプリ説明・認証状態によるリダイレクト処理付き）
+ *
+ * @component
+ * @returns {JSX.Element} トップページUI
+ * @description
+ * ログイン済みユーザーは自動的に投稿一覧（/home）へリダイレクト。
+ * 未ログインの場合はアプリ説明を表示。
+ * サービス紹介文あり、シンプルな構成。
+ */
 export default function Home() {
   const { user, isLoading } = useAuth();
   const router = useRouter();

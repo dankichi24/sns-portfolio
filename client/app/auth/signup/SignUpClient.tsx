@@ -23,6 +23,16 @@ interface ApiSuccessResponse {
   };
 }
 
+/**
+ * サインアップ（新規登録）画面のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} サインアップフォームのUI
+ * @description
+ * ユーザー名・メールアドレス・パスワードを入力し、サインアップAPIにPOSTする。
+ * パスワードの一致チェック・入力補助（表示切替）・エラーハンドリングに対応。
+ * 登録成功時は自動的にログインし、ホーム画面へ遷移。
+ */
 const SignUpClient = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");

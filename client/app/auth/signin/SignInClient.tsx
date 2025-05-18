@@ -23,6 +23,16 @@ interface ApiSuccessResponse {
   };
 }
 
+/**
+ * サインイン（ログイン）画面のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} サインインフォームと認証処理UI
+ * @description
+ * メールアドレスとパスワードを入力し、ログインAPIにPOSTする。
+ * 成功時はユーザー情報をContextに保存し、ホーム画面にリダイレクト。
+ * エラー時はメッセージを表示します。パスワードの表示切替も対応。
+ */
 const SignInClient = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

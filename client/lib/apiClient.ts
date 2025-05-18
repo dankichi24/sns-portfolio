@@ -1,3 +1,15 @@
+/**
+ * 共通APIクライアント（axiosインスタンス）
+ *
+ * @module apiClient
+ * @description
+ * アプリ全体で利用するaxiosの共通インスタンス。
+ * - ベースURLは環境変数 `NEXT_PUBLIC_API_URL`（なければlocalhost）を使用
+ * - リクエスト時に `authToken` を自動付与（Bearer認証）
+ * - `/api/posts` と `/api/users` はno-cacheヘッダー付与でキャッシュ抑止
+ * - withCredentials: true でCookie送信も対応
+ */
+
 import axios from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";

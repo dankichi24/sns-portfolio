@@ -4,6 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import apiClient from "@/lib/apiClient";
 
+/**
+ * 投稿作成画面のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} 投稿作成フォームのUI
+ * @description
+ * 本文と画像ファイルを入力し、新規投稿APIに送信。
+ * 画像プレビューや入力制限、投稿中のローディング状態、キャンセルによるホーム画面遷移など
+ * 投稿作成の一連のUXを提供。
+ */
 const CreatePost = () => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);

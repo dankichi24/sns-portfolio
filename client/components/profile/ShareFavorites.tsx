@@ -15,6 +15,18 @@ interface ShareFavoritesProps {
   active: boolean;
 }
 
+/**
+ * お気に入り投稿一覧画面のクライアントコンポーネント
+ *
+ * @component
+ * @param {Object} props
+ * @param {number} props.userId - 対象ユーザーのID
+ * @param {boolean} props.active - タブがアクティブかどうか
+ * @returns {JSX.Element} お気に入り投稿リストUI
+ * @description
+ * ログインユーザーがお気に入りした投稿をAPIから取得し一覧を表示。
+ * いいね解除（お気に入り解除）、投稿削除、画像モーダル、ローディング・エラー表示に対応。
+ */
 const ShareFavorites: React.FC<ShareFavoritesProps> = ({ userId, active }) => {
   const [favoritePosts, setFavoritePosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);

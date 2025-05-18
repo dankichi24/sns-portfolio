@@ -15,6 +15,18 @@ interface ShareHistoryProps {
   active: boolean;
 }
 
+/**
+ * 投稿履歴（自分の投稿一覧）画面のクライアントコンポーネント
+ *
+ * @component
+ * @param {Object} props
+ * @param {number} props.userId - 対象ユーザーのID
+ * @param {boolean} props.active - タブがアクティブかどうか
+ * @returns {JSX.Element} 投稿履歴リストUI
+ * @description
+ * ログインユーザーの過去の投稿をAPIから取得し一覧を表示。
+ * 投稿のいいね・削除・画像モーダル表示、ローディングやエラーハンドリングなどの機能を備えています。
+ */
 const ShareHistory: React.FC<ShareHistoryProps> = ({ userId, active }) => {
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);

@@ -14,6 +14,23 @@ interface PostItemProps {
   activeTab: string;
 }
 
+/**
+ * 投稿情報を表示するカード型コンポーネント
+ *
+ * @component
+ * @param {PostItemProps} props - 投稿カードのprops
+ * @param {Post} props.post - 表示対象の投稿データ
+ * @param {number|null} props.userId - 現在ログイン中のユーザーID
+ * @param {Function} props.toggleLike - いいね切り替え処理（引数: postId: number）
+ * @param {Function} props.confirmDeletePost - 削除確認処理（引数: postId: number）
+ * @param {Function} props.openModal - 画像モーダル表示処理（引数: image: string）
+ * @param {number|null} props.animateLike - いいねアニメーション用
+ * @param {string} props.activeTab - アクティブなタブ情報（戻り先用）
+ * @returns {JSX.Element} 投稿カードUI
+ * @description
+ * 投稿本文・画像・ユーザー・いいね・編集/削除ボタン等をまとめて表示。
+ * ログインユーザー自身の投稿には編集・削除ボタンも表示。
+ */
 const PostItem: React.FC<PostItemProps> = ({
   post,
   userId,

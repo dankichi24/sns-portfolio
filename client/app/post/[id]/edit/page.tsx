@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import apiClient from "@/lib/apiClient";
 
+/**
+ * 投稿編集画面のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} 投稿編集フォームのUI
+ * @description
+ * URLパラメータから投稿IDを取得し、API経由で既存投稿内容・画像を取得・表示する。
+ * 本文・画像を編集して保存でき、保存後は前画面またはホームへ遷移。
+ * 画像プレビュー、ローディング表示、キャンセル操作にも対応。
+ */
 const EditPost = () => {
   const { id } = useParams();
   const searchParams = useSearchParams();

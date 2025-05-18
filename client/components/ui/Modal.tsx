@@ -6,6 +6,18 @@ interface ModalProps {
   closeModal: () => void;
 }
 
+/**
+ * 画像表示用モーダルコンポーネント
+ *
+ * @component
+ * @param {Object} props
+ * @param {boolean} props.isModalOpen - モーダルが表示中かどうか
+ * @param {string|null} props.selectedImage - モーダル内で表示する画像URL
+ * @param {Function} props.closeModal - モーダルを閉じるためのコールバック（引数なし）
+ * @returns {JSX.Element|null} モーダルUI（非表示時はnull）
+ * @description
+ * 画像クリックで拡大表示し、背景クリックまたはcloseModalで閉じられるモーダル。
+ */
 const Modal: React.FC<ModalProps> = ({
   isModalOpen,
   selectedImage,

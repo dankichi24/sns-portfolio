@@ -7,6 +7,15 @@ import ImageWithCacheBusting from "@/components/ImageWithCacheBusting";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
+/**
+ * プロフィール画面のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} プロフィール画面UI
+ * @description
+ * ログインユーザーのプロフィール画像・ユーザー名の表示／編集・画像アップロードができる画面。
+ * 画像のプレビューやアップロード、ユーザー名編集のバリデーション、下部にはDeviceList（デバイス一覧）も表示。
+ */
 const Profile: React.FC = () => {
   const { user, login } = useAuth();
   const [isEditing, setIsEditing] = useState(false);

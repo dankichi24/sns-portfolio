@@ -15,6 +15,16 @@ interface Device {
   comment?: string;
 }
 
+/**
+ * デバイス一覧表示および追加・削除フォームのクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} デバイス一覧・追加フォームUI
+ * @description
+ * 現在ログイン中ユーザーの所有デバイス一覧をAPI経由で取得・表示し、デバイスの追加・削除も可能な画面。
+ * デバイス名・コメント・画像をフォームから登録でき、プレビューやバリデーションも対応。
+ * SweetAlert2で削除時の確認ダイアログも実装しています。
+ */
 const DeviceList: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [newDeviceName, setNewDeviceName] = useState("");

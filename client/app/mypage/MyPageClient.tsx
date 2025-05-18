@@ -7,6 +7,15 @@ import ShareHistory from "@/components/profile/ShareHistory";
 import ShareFavorites from "@/components/profile/ShareFavorites";
 import Profile from "@/components/profile/Profile";
 
+/**
+ * マイページ画面のクライアントコンポーネント
+ *
+ * @component
+ * @returns {JSX.Element} マイページのUI
+ * @description
+ * 認証済みユーザー向けにプロフィール・投稿履歴・お気に入りのタブ切り替えUIを提供。
+ * タブの状態はURLクエリパラメータからも同期可能。未ログイン時はサインイン画面へリダイレクト。
+ */
 const MyPageClient = () => {
   const { user } = useAuth();
   const router = useRouter();
