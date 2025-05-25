@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 interface ImageWithCacheBustingProps
   extends React.ImgHTMLAttributes<HTMLImageElement> {
   cacheBust?: boolean;

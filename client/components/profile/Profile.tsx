@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/authContext";
 import DeviceList from "@/components/profile/DeviceList";
 import ImageWithCacheBusting from "@/components/ImageWithCacheBusting";
