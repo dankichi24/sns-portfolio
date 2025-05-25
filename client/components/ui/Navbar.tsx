@@ -47,7 +47,7 @@ const Navbar = () => {
       };
       fetchUser();
     }
-  }, [user, login]);
+  }, [user, login, logout]);
 
   if (isLoading) return null;
 
