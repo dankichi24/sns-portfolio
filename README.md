@@ -34,14 +34,16 @@
 
 ## ■ 使用技術
 
-### バックエンド
-
-- Node.js (Express)
-- Prisma
-- Supabase（Storage / Auth / DB）
-
 ### フロントエンド
 
-- Next.js
+- HTML5／CSS3
+- JavaScript
 - TypeScript
-- TailwindCSS
+- React
+- Next.js
+
+### バックエンド
+
+- Node.js
+- Prisma
+- Supabase
